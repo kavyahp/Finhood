@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabaseClient';
+import { useExpenses } from '../contexts/ExpensesContext';
 import Navbar from './Navbar';
 import ExpensesList from './ExpensesList';
 import AddExpense from './AddExpense';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [expenses, setExpenses] = useState([]);
+  const { expenses, loading, error, addExpense, deleteExpense } = useExpenses();
   const [userName, setUserName] = useState('');
   const [currency, setCurrency] = useState(() => {
     const saved = localStorage.getItem('currency');
@@ -32,10 +30,6 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    fetchExpenses();
-  }, []);
-
-  useEffect(() => {
     localStorage.setItem('currency', currency);
   }, [currency]);
 
@@ -45,44 +39,18 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  const fetchExpenses = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('expenses')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setExpenses(data || []);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title || !formData.amount) return;
 
     try {
-      const { data, error } = await supabase
-        .from('expenses')
-        .insert([
-          {
-            user_id: user.id,
-            title: formData.title,
-            amount: parseFloat(formData.amount),
-            category: formData.category,
-            date: formData.date,
-          },
-        ])
-        .select();
+      await addExpense({
+        title: formData.title,
+        amount: parseFloat(formData.amount),
+        category: formData.category,
+        date: formData.date,
+      });
 
-      if (error) throw error;
-
-      setExpenses([...expenses, data[0]]);
       setFormData({
         title: '',
         amount: '',
@@ -96,10 +64,7 @@ export default function Dashboard() {
 
   const handleDelete = async (id) => {
     try {
-      const { error } = await supabase.from('expenses').delete().eq('id', id);
-
-      if (error) throw error;
-      setExpenses(expenses.filter((expense) => expense.id !== id));
+      await deleteExpense(id);
     } catch (error) {
       console.error('Error deleting expense:', error);
     }
