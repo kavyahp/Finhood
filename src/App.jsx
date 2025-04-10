@@ -11,7 +11,7 @@ import CurrencySelector from './components/CurrencySelector';
 import { useAuth } from './contexts/AuthContext';
 
 function App() {
-  const { loading, error, clearError } = useAuth();
+  const { loading, error, clearError, user } = useAuth();
 
   if (loading) {
     return (
@@ -41,18 +41,19 @@ function App() {
       <AuthProvider>
         <CurrencyProvider>
           <TransactionsProvider>
-            <Navbar />
-            <CurrencySelector />
+            {user && <Navbar />}
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/dashboard" element={
                 <ProtectedRoute>
+                  <CurrencySelector />
                   <Dashboard />
                 </ProtectedRoute>
               } />
               <Route path="/" element={
                 <ProtectedRoute>
+                  <CurrencySelector />
                   <Dashboard />
                 </ProtectedRoute>
               } />
