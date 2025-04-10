@@ -2,54 +2,77 @@ import { supabase } from '../lib/supabaseClient'
 
 export const authService = {
   async signUp(email, password) {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    
-    if (error) throw error;
-    return data;
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      
+      if (error) throw new Error(error.message);
+      return data;
+    } catch (error) {
+      console.error('Error during signup:', error);
+      throw error;
+    }
   },
 
   async signIn(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    
-    if (error) throw error;
-    return data;
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw new Error(error.message);
+      return data;
+    } catch (error) {
+      console.error('Error during sign in:', error);
+      throw error;
+    }
   },
 
   async signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw new Error(error.message);
+    } catch (error) {
+      console.error('Error during sign out:', error);
+      throw error;
+    }
   },
 
   async getSession() {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    if (error) throw error;
-    return session;
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) throw new Error(error.message);
+      return session;
+    } catch (error) {
+      console.error('Error getting session:', error);
+      throw error;
+    }
   },
 
   async getUser() {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    if (error) throw error;
-    return user;
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) throw new Error(error.message);
+      return user;
+    } catch (error) {
+      console.error('Error getting user:', error);
+      throw error;
+    }
   },
 }
 
 export const transactionService = {
-  supabase,
-
   async getAllTransactions() {
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await supabase
         .from('transactions')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) throw new Error(error.message);
       return data;
     } catch (error) {
       console.error('Error fetching transactions:', error);
@@ -57,49 +80,32 @@ export const transactionService = {
     }
   },
 
-  async getExpenses(userId) {
+  async getTransactionsByType(userId, type) {
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await supabase
         .from('transactions')
         .select('*')
-        .eq('type', 'expense')
+        .eq('type', type)
         .eq('user_id', userId)
         .order('date', { ascending: false });
 
-      if (error) throw error;
+      if (error) throw new Error(error.message);
       return data;
     } catch (error) {
-      console.error('Error fetching expenses:', error);
-      throw error;
-    }
-  },
-
-  async getIncomes(userId) {
-    try {
-      const { data, error } = await this.supabase
-        .from('transactions')
-        .select('*')
-        .eq('type', 'income')
-        .eq('user_id', userId)
-        .order('date', { ascending: false });
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error fetching incomes:', error);
+      console.error(`Error fetching ${type} transactions:`, error);
       throw error;
     }
   },
 
   async createTransaction(transactionData) {
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await supabase
         .from('transactions')
         .insert([transactionData])
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) throw new Error(error.message);
       return data;
     } catch (error) {
       console.error('Error creating transaction:', error);
@@ -107,14 +113,31 @@ export const transactionService = {
     }
   },
 
+  async updateTransaction(id, updates) {
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw new Error(error.message);
+      return data;
+    } catch (error) {
+      console.error('Error updating transaction:', error);
+      throw error;
+    }
+  },
+
   async deleteTransaction(id) {
     try {
-      const { error } = await this.supabase
+      const { error } = await supabase
         .from('transactions')
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
+      if (error) throw new Error(error.message);
     } catch (error) {
       console.error('Error deleting transaction:', error);
       throw error;

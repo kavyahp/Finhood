@@ -67,6 +67,7 @@ export default function Dashboard() {
       refreshTransactions();
     } catch (error) {
       console.error('Error updating transaction:', error);
+      setSuccessMessage('Error updating transaction. Please try again.');
     }
   };
 

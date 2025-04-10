@@ -1,24 +1,54 @@
 import { createClient } from '@supabase/supabase-js';
 
+// Get environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const createSupabaseClient = async () => {
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
-  const { data: { session } } = await supabase.auth.getSession();
+// Verify environment variables
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Supabase environment variables are not set');
+}
 
-  if (session) {
-    return createClient(supabaseUrl, supabaseAnonKey, {
-      global: {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      },
-    });
+// Create a single instance of the client
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false
+  },
+  global: {
+    headers: {
+      'Accept': 'application/json'
+    },
+    fetch: async (...args) => {
+      try {
+        const response = await fetch(...args);
+        if (!response.ok) {
+          const error = new Error('Network response was not ok');
+          error.response = response;
+          throw error;
+        }
+        return response;
+      } catch (error) {
+        console.error('Fetch error:', error);
+        throw error;
+      }
+    }
   }
+});
 
-  return supabase;
+// Initialize the client and test connection
+export const initializeSupabase = async () => {
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    console.log('Supabase initialized successfully:', { isAuthenticated: !!session });
+    return session;
+  } catch (error) {
+    console.error('Failed to initialize Supabase:', error);
+    throw error;
+  }
 };
 
-// Default client for unauthenticated requests
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Initialize when the module loads
+initializeSupabase().catch(console.error);

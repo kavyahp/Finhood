@@ -21,8 +21,8 @@ export function useTransactions() {
       if (!user) return
 
       const [expensesData, incomeData] = await Promise.all([
-        transactionService.getExpenses(user.id),
-        transactionService.getIncomes(user.id)
+        transactionService.getTransactionsByType(user.id, 'expense'),
+        transactionService.getTransactionsByType(user.id, 'income')
       ])
 
       setExpenses(expensesData || [])
@@ -62,6 +62,46 @@ export function useTransactions() {
     }
   }
 
+  async function updateTransaction(id, updates) {
+    try {
+      setError(null)
+      
+      // First update the local state to provide immediate feedback
+      const updatedTransaction = {
+        ...expenses.find(t => t.id === id) || income.find(t => t.id === id),
+        ...updates,
+        amount: parseFloat(updates.amount),
+        date: new Date(updates.date).toISOString()
+      };
+      
+      // Update both lists
+      setExpenses(prev => 
+        prev.map(expense => 
+          expense.id === id ? updatedTransaction : expense
+        )
+      )
+      
+      setIncome(prev => 
+        prev.map(income => 
+          income.id === id ? updatedTransaction : income
+        )
+      )
+      
+      // Then update in the database
+      await transactionService.updateTransaction(id, {
+        ...updates,
+        amount: parseFloat(updates.amount),
+        date: new Date(updates.date).toISOString()
+      });
+      
+      return updatedTransaction
+    } catch (err) {
+      setError(err.message)
+      console.error('Error updating transaction:', err)
+      throw err
+    }
+  }
+
   async function deleteTransaction(id) {
     try {
       setError(null)
@@ -83,6 +123,7 @@ export function useTransactions() {
     loading,
     error,
     addTransaction,
+    updateTransaction,
     deleteTransaction,
     refreshTransactions: fetchTransactions,
   }
