@@ -23,7 +23,7 @@ export default function Login() {
         password: formData.password,
       });
       if (error) throw error;
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
       setError(error.message);
     } finally {

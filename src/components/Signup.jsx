@@ -27,7 +27,7 @@ export default function Signup() {
         },
       });
       if (error) throw error;
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
       setError(error.message);
     } finally {
