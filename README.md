@@ -2,9 +2,7 @@
 
 **Finhood** is a simple, elegant expense tracker built for early-career professionals to help manage personal budgets with clarity and ease.
 
-![Finhood Logo](/logo.png) <!-- Logo from public directory -->
-
----
+## [finhood.netlify.app](https://finhood.netlify.app/)
 
 ## ✨ Features
 
@@ -31,18 +29,21 @@
 ## 📦 Getting Started
 
 1. **Clone the repo**
+
    ```bash
    git clone https://github.com/kavyahp/Finhood.git
    cd finhood
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up your environment variables**
    Create a `.env` file and add:
+
    ```env
    VITE_SUPABASE_URL=https://your-project.supabase.co
    VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
@@ -54,6 +55,7 @@
    ```
 
 ## 🛠️ Project Structure
+
 ```bash
 src/
 ├── components/      # Reusable components like Navbar, ExpenseForm
