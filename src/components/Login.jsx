@@ -32,19 +32,18 @@ export default function Login() {
   };
 
   return (
-    <div className="page-container">
-      <div className="header">
-        <img src="/logo.png" alt="Finhood Logo" className="logo" />
-        <h1>Welcome back!</h1>
-      </div>
+    <div className="auth-layout">
+      <div className="auth-card">
+        <div className="auth-card-header">
+          <img src="/logo.png" alt="Finhood Logo" />
+          <h1>Welcome back!</h1>
+        </div>
 
-      <div className="card">
-        <form onSubmit={handleSubmit} className="form-grid">
+        <form onSubmit={handleSubmit} className="auth-card-form">
           <div className="form-group">
             <label>Email</label>
             <input
               type="email"
-              className="input"
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
@@ -56,7 +55,6 @@ export default function Login() {
             <label>Password</label>
             <input
               type="password"
-              className="input"
               value={formData.password}
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
@@ -65,15 +63,20 @@ export default function Login() {
             />
           </div>
           {error && <div className="error-message">{error}</div>}
-          <button type="submit" className="btn btn-primary" disabled={loading}>
+          <button 
+            type="submit" 
+            className="auth-card-button" 
+            disabled={loading}
+          >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-      </div>
 
-      <p className="auth-footer">
-        Don't have an account? <Link to="/signup">Sign up</Link>
-      </p>
+        <div className="auth-card-footer">
+          Don't have an account?{' '}
+          <Link to="/signup">Sign up</Link>
+        </div>
+      </div>
     </div>
   );
 }

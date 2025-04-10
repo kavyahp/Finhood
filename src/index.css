@@ -308,8 +308,8 @@ label {
 }
 
 .auth-footer {
-  margin-top: 24px;
   text-align: center;
+  margin-top: 24px;
   color: var(--text-secondary);
 }
 
@@ -1167,4 +1167,113 @@ label {
   background: var(--card-background);
   color: var(--text-color);
   padding: 0.75rem 1rem;
+}
+
+/* Card Layout */
+.auth-layout {
+  min-height: 100vh;
+  background-color: #f0f9ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.auth-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+}
+
+.auth-card-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-card-header img {
+  width: 120px;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+.auth-card-header h1 {
+  color: #1a1a1a;
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.auth-card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.auth-card-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.auth-card-form label {
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.auth-card-form input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.auth-card-form input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.auth-card-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.auth-card-button:hover {
+  background: #2563eb;
+}
+
+.auth-card-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-card-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.auth-card-footer a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.auth-card-footer a:hover {
+  color: #2563eb;
 }

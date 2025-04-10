@@ -36,19 +36,18 @@ export default function Signup() {
   };
 
   return (
-    <div className="page-container">
-      <div className="header">
-        <img src="/logo.png" alt="Finhood Logo" className="logo" />
-        <h1>Create your account</h1>
-      </div>
+    <div className="auth-layout">
+      <div className="auth-card">
+        <div className="auth-card-header">
+          <img src="/logo.png" alt="Finhood Logo" />
+          <h1>Create your account</h1>
+        </div>
 
-      <div className="card">
-        <form onSubmit={handleSubmit} className="form-grid">
+        <form onSubmit={handleSubmit} className="auth-card-form">
           <div className="form-group">
-            <label>Name</label>
+            <label>Full Name</label>
             <input
               type="text"
-              className="input"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
@@ -60,7 +59,6 @@ export default function Signup() {
             <label>Email</label>
             <input
               type="email"
-              className="input"
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
@@ -72,7 +70,6 @@ export default function Signup() {
             <label>Password</label>
             <input
               type="password"
-              className="input"
               value={formData.password}
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
@@ -81,15 +78,20 @@ export default function Signup() {
             />
           </div>
           {error && <div className="error-message">{error}</div>}
-          <button type="submit" className="btn btn-primary" disabled={loading}>
+          <button 
+            type="submit" 
+            className="auth-card-button" 
+            disabled={loading}
+          >
             {loading ? 'Creating account...' : 'Sign up'}
           </button>
         </form>
-      </div>
 
-      <p className="auth-footer">
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+        <div className="auth-card-footer">
+          Already have an account?{' '}
+          <Link to="/login">Login</Link>
+        </div>
+      </div>
     </div>
   );
 }
