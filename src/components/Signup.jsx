@@ -13,26 +13,38 @@ export default function Signup() {
     email: '',
     password: '',
   });
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
+
     try {
-      setError(null);
-      setLoading(true);
       const { error } = await signUp({
         email: formData.email,
         password: formData.password,
         metadata: {
           name: formData.name,
-        },
+        }
       });
+
       if (error) throw error;
-      navigate('/dashboard');
-    } catch (error) {
-      setError(error.message);
+
+      setShowVerificationMessage(true);
+      setTimeout(() => {
+        navigate('/login');
+      }, 5000);
+    } catch (err) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -43,49 +55,51 @@ export default function Signup() {
           <h1>Create your account</h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="auth-card-form">
-          <div className="form-group">
-            <label>Full Name</label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-              required
-            />
-          </div>
+        <div className="auth-card-content">
           {error && <div className="error-message">{error}</div>}
-          <button 
-            type="submit" 
-            className="auth-card-button" 
-            disabled={loading}
-          >
-            {loading ? 'Creating account...' : 'Sign up'}
-          </button>
-        </form>
+          {showVerificationMessage ? (
+            <div className="verification-message">
+              📩 Please check your email to verify your account. We'll redirect you to login in a few seconds.
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="auth-card-form">
+              <div className="form-group">
+                <label>Full Name</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Password</label>
+                <input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                />
+              </div>
+              <button 
+                type="submit" 
+                className="auth-card-button" 
+                disabled={loading}
+              >
+                {loading ? 'Creating account...' : 'Sign up'}
+              </button>
+            </form>
+          )}
+        </div>
 
         <div className="auth-card-footer">
           Already have an account?{' '}
