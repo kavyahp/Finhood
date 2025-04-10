@@ -300,7 +300,13 @@ label {
   color: white;
 }
 
-/* Auth specific */
+/* Custom accent background button */
+.accent-bg {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+}
+
 .auth-footer {
   margin-top: 24px;
   text-align: center;

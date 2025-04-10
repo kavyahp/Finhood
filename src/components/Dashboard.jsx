@@ -91,16 +91,16 @@ export default function Dashboard() {
 
         <div className="transaction-type-selector">
           <button
-            className={`btn ${showExpenseForm ? 'btn-primary' : 'btn-outline'}`}
-            onClick={handleExpenseClick}
-          >
-            + Add Expense
-          </button>
-          <button
             className={`btn ${showIncomeForm ? 'btn-primary' : 'btn-outline'}`}
             onClick={handleIncomeClick}
           >
             + Add Income
+          </button>
+          <button
+            className="btn accent-bg"
+            onClick={handleExpenseClick}
+          >
+            + Add Expense
           </button>
         </div>
 
@@ -108,28 +108,6 @@ export default function Dashboard() {
           <div className="success-message">
             {successMessage}
           </div>
-        )}
-
-        {showExpenseForm && (
-          <TransactionForm
-            onClose={() => {
-              setShowExpenseForm(false);
-              refreshTransactions();
-            }}
-            onSubmit={async (transaction) => {
-              try {
-                await addTransaction({
-                  ...transaction,
-                  amount: parseFloat(transaction.amount),
-                  type: 'expense'
-                });
-                setSuccessMessage('Expense added successfully!');
-              } catch (err) {
-                console.error(err.message);
-              }
-            }}
-            type="expense"
-          />
         )}
 
         {showIncomeForm && (
@@ -154,48 +132,31 @@ export default function Dashboard() {
           />
         )}
 
+        {showExpenseForm && (
+          <TransactionForm
+            onClose={() => {
+              setShowExpenseForm(false);
+              refreshTransactions();
+            }}
+            onSubmit={async (transaction) => {
+              try {
+                await addTransaction({
+                  ...transaction,
+                  amount: parseFloat(transaction.amount),
+                  type: 'expense'
+                });
+                setSuccessMessage('Expense added successfully!');
+              } catch (err) {
+                console.error(err.message);
+              }
+            }}
+            type="expense"
+          />
+        )}
+
         <div className="dashboard-content">
           <div className="transactions-container">
-            {/* Expenses Card */}
-            <section className="transactions-section">
-              <div className="transactions-header">
-                <h2>Expenses</h2>
-                <span className="total-amount">Total: -${calculateTotal(expenses, 'expense')}</span>
-              </div>
-              <div className="transactions-list">
-                {expenses.length === 0 ? (
-                  <div className="no-transactions">No expenses found</div>
-                ) : (
-                  expenses.map((transaction) => (
-                    <div key={transaction.id} className="transaction-item">
-                      <div className="transaction-details">
-                        <div className="transaction-amount">-${transaction.amount.toFixed(2)}</div>
-                        <div className="transaction-category">{transaction.category}</div>
-                        <div className="transaction-date">{new Date(transaction.date).toLocaleDateString()}</div>
-                      </div>
-                      <div className="transaction-actions">
-                        <button
-                          className="edit-btn"
-                          onClick={() => handleEdit(transaction)}
-                          aria-label="Edit expense"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="delete-btn"
-                          onClick={() => deleteTransaction(transaction.id)}
-                          aria-label="Delete expense"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </section>
-
-            {/* Income Card */}
+            {/* Income Card - Left Side */}
             <section className="transactions-section">
               <div className="transactions-header">
                 <h2>Income</h2>
@@ -224,6 +185,45 @@ export default function Dashboard() {
                           className="delete-btn"
                           onClick={() => deleteTransaction(transaction.id)}
                           aria-label="Delete income"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </section>
+
+            {/* Expenses Card - Right Side */}
+            <section className="transactions-section">
+              <div className="transactions-header">
+                <h2>Expenses</h2>
+                <span className="total-amount">Total: -${calculateTotal(expenses, 'expense')}</span>
+              </div>
+              <div className="transactions-list">
+                {expenses.length === 0 ? (
+                  <div className="no-transactions">No expenses found</div>
+                ) : (
+                  expenses.map((transaction) => (
+                    <div key={transaction.id} className="transaction-item">
+                      <div className="transaction-details">
+                        <div className="transaction-amount">-${transaction.amount.toFixed(2)}</div>
+                        <div className="transaction-category">{transaction.category}</div>
+                        <div className="transaction-date">{new Date(transaction.date).toLocaleDateString()}</div>
+                      </div>
+                      <div className="transaction-actions">
+                        <button
+                          className="edit-btn"
+                          onClick={() => handleEdit(transaction)}
+                          aria-label="Edit expense"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="delete-btn"
+                          onClick={() => deleteTransaction(transaction.id)}
+                          aria-label="Delete expense"
                         >
                           Delete
                         </button>
