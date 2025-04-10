@@ -194,14 +194,14 @@ export default function Dashboard() {
                           onClick={() => handleEdit(transaction)}
                           aria-label="Edit income"
                         >
-                          Edit
+                          ✏️
                         </button>
                         <button
                           className="delete-btn"
                           onClick={() => deleteTransaction(transaction.id)}
                           aria-label="Delete income"
                         >
-                          Delete
+                          🗑️
                         </button>
                       </div>
                     </div>
@@ -233,14 +233,14 @@ export default function Dashboard() {
                           onClick={() => handleEdit(transaction)}
                           aria-label="Edit expense"
                         >
-                          Edit
+                          ✏️
                         </button>
                         <button
                           className="delete-btn"
                           onClick={() => deleteTransaction(transaction.id)}
                           aria-label="Delete expense"
                         >
-                          Delete
+                          🗑️
                         </button>
                       </div>
                     </div>

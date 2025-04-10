@@ -36,14 +36,14 @@ export default function ExpensesList() {
                   className="edit-btn"
                   aria-label="Edit expense"
                 >
-                  Edit
+                  ✏️
                 </button>
                 <button
                   onClick={() => deleteExpense(expense.id)}
                   className="delete-btn"
                   aria-label="Delete expense"
                 >
-                  Delete
+                  🗑️
                 </button>
               </div>
             </div>
