@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabaseClient';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { signIn, error, clearError } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -16,18 +13,16 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setError(null);
-      setLoading(true);
-      const { error } = await signIn({
+      const user = await signIn({
         email: formData.email,
         password: formData.password,
       });
-      if (error) throw error;
-      navigate('/dashboard');
+      
+      if (user) {
+        navigate('/dashboard');
+      }
     } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
+      console.error('Login error:', error);
     }
   };
 
@@ -35,7 +30,6 @@ export default function Login() {
     <div className="auth-layout">
       <div className="auth-card">
         <div className="auth-card-header">
-          <img src="/logo.png" alt="Finhood Logo" />
           <h1>Welcome back!</h1>
         </div>
 
@@ -62,13 +56,19 @@ export default function Login() {
               required
             />
           </div>
-          {error && <div className="error-message">{error}</div>}
-          <button 
-            type="submit" 
-            className="auth-card-button" 
-            disabled={loading}
-          >
-            {loading ? 'Logging in...' : 'Login'}
+          {error && (
+            <div className="error-message">
+              {error}
+              <button 
+                className="clear-error-button" 
+                onClick={clearError}
+              >
+                Clear Error
+              </button>
+            </div>
+          )}
+          <button type="submit" className="auth-card-button">
+            Login
           </button>
         </form>
 

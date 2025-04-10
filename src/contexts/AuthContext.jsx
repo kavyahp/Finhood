@@ -3,20 +3,34 @@ import { supabase } from '../lib/supabaseClient'
 
 const AuthContext = createContext({})
 
-export const useAuth = () => useContext(AuthContext)
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
+  // Check for existing session on mount
   useEffect(() => {
-    // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
+    const checkSession = async () => {
+      try {
+        setLoading(true)
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        if (sessionError) throw sessionError
+        setUser(session?.user ?? null)
+        setLoading(false)
+        setError(null)
+      } catch (error) {
+        console.error('Error checking session:', error)
+        setUser(null)
+        setLoading(false)
+        setError(error.message)
+      }
+    }
 
-    // Listen for changes on auth state (sign in, sign out, etc.)
+    checkSession()
+  }, [])
+
+  // Listen for auth state changes
+  useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
     })
@@ -24,11 +38,77 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe()
   }, [])
 
+  const signUp = async (data) => {
+    try {
+      setLoading(true)
+      setError(null)
+      const { data: { user }, error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            name: data.metadata?.name
+          }
+        }
+      })
+      
+      if (error) throw error
+      return user
+    } catch (error) {
+      console.error('Error during signup:', error)
+      setError(error.message)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const signIn = async (data) => {
+    try {
+      setLoading(true)
+      setError(null)
+      const { data: { user }, error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password
+      })
+      
+      if (error) throw error
+      return user
+    } catch (error) {
+      console.error('Error during sign in:', error)
+      setError(error.message)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const signOut = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const { error } = await supabase.auth.signOut()
+      
+      if (error) throw error
+      setUser(null)
+    } catch (error) {
+      console.error('Error during sign out:', error)
+      setError(error.message)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const value = {
-    signUp: (data) => supabase.auth.signUp(data),
-    signIn: (data) => supabase.auth.signInWithPassword(data),
-    signOut: () => supabase.auth.signOut(),
+    signUp,
+    signIn,
+    signOut,
     user,
+    loading,
+    error,
+    isAuthenticated: !!user,
+    clearError: () => setError(null)
   }
 
   return (
@@ -37,3 +117,5 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   )
 }
+
+export const useAuth = () => useContext(AuthContext)

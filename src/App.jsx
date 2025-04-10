@@ -6,27 +6,57 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import Dashboard from './components/Dashboard';
 import Navbar from './components/Navbar';
+import { useAuth } from './contexts/AuthContext';
 
 function App() {
+  const { loading, error, clearError } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-content">
+          <h2>Loading...</h2>
+          <p>Please wait while we check your session.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="error-container">
+        <div className="error-content">
+          <h2>Error</h2>
+          <p>{error}</p>
+          <button onClick={clearError}>Try Again</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Router>
       <AuthProvider>
         <TransactionsProvider>
           <Routes>
-            <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Navigate to="/signup" replace />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <>
-                    <Navbar />
-                    <Dashboard />
-                  </>
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <>
+                  <Navbar />
+                  <Dashboard />
+                </>
+              </ProtectedRoute>
+            } />
+            <Route path="/" element={
+              <ProtectedRoute>
+                <>
+                  <Navbar />
+                  <Dashboard />
+                </>
+              </ProtectedRoute>
+            } />
           </Routes>
         </TransactionsProvider>
       </AuthProvider>
