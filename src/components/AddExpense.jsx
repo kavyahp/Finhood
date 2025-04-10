@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useExpenses } from '../contexts/ExpensesContext';
+import { useTransactions } from '../contexts/TransactionsContext';
 
 const categories = [
   'Food',
@@ -21,7 +21,7 @@ export default function AddExpense({
   currencySymbols,
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { addExpense } = useExpenses();
+  const { addTransaction } = useTransactions();
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();

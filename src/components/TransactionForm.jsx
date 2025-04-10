@@ -1,27 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTransactions } from '../contexts/TransactionsContext';
 
-export default function EditExpenseModal({ expense, onClose, onSuccess }) {
-  const { updateExpense } = useTransactions();
+export default function TransactionForm({ onClose, onSubmit, type = 'expense' }) {
   const [formData, setFormData] = useState({
     title: '',
     amount: '',
-    category: 'other',
-    date: '',
+    category: type === 'expense' ? 'other' : 'salary',
+    date: new Date().toISOString().split('T')[0],
   });
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
-  useEffect(() => {
-    if (expense) {
-      setFormData({
-        title: expense.title,
-        amount: expense.amount.toString(),
-        category: expense.category,
-        date: expense.date,
-      });
-    }
-  }, [expense]);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,11 +37,11 @@ export default function EditExpenseModal({ expense, onClose, onSuccess }) {
 
     try {
       setIsSubmitting(true);
-      await updateExpense(expense.id, {
+      await onSubmit({
         ...formData,
         amount: parseFloat(formData.amount),
+        type,
       });
-      onSuccess?.();
       onClose();
     } catch (err) {
       setError(err.message);
@@ -57,26 +51,39 @@ export default function EditExpenseModal({ expense, onClose, onSuccess }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="modal-content">
         <div className="modal-header">
-          <h2>Edit Expense</h2>
+          <h2>{type === 'expense' ? 'Add Expense' : 'Add Income'}</h2>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
         
+        {successMessage && (
+          <div className="success-message">
+            {successMessage}
+            <button
+              className="message-close"
+              onClick={() => setSuccessMessage('')}
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        {error && <div className="error-message">{error}</div>}
+        
         <form onSubmit={handleSubmit} className="modal-form">
-          {error && <div className="error-message">{error}</div>}
-          
           <div className="form-grid">
             <div className="form-group">
               <label htmlFor="title">Title</label>
               <input
                 type="text"
                 id="title"
+                name="title"
                 className="input"
                 value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="Expense title"
+                onChange={handleChange}
+                placeholder={type === 'expense' ? 'Groceries, Rent, etc.' : 'Salary, Bonus, etc.'}
                 required
               />
             </div>
@@ -86,9 +93,10 @@ export default function EditExpenseModal({ expense, onClose, onSuccess }) {
               <input
                 type="number"
                 id="amount"
+                name="amount"
                 className="input"
                 value={formData.amount}
-                onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
+                onChange={handleChange}
                 placeholder="0.00"
                 step="0.01"
                 min="0"
@@ -100,16 +108,29 @@ export default function EditExpenseModal({ expense, onClose, onSuccess }) {
               <label htmlFor="category">Category</label>
               <select
                 id="category"
+                name="category"
                 className="input"
                 value={formData.category}
-                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                onChange={handleChange}
               >
-                <option value="food">Food</option>
-                <option value="transport">Transport</option>
-                <option value="utilities">Utilities</option>
-                <option value="entertainment">Entertainment</option>
-                <option value="shopping">Shopping</option>
-                <option value="other">Other</option>
+                {type === 'expense' ? (
+                  <>
+                    <option value="food">Food</option>
+                    <option value="transport">Transport</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="entertainment">Entertainment</option>
+                    <option value="shopping">Shopping</option>
+                    <option value="other">Other</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="salary">Salary</option>
+                    <option value="bonus">Bonus</option>
+                    <option value="gift">Gift</option>
+                    <option value="refund">Refund</option>
+                    <option value="other">Other</option>
+                  </>
+                )}
               </select>
             </div>
 
@@ -118,9 +139,10 @@ export default function EditExpenseModal({ expense, onClose, onSuccess }) {
               <input
                 type="date"
                 id="date"
+                name="date"
                 className="input"
                 value={formData.date}
-                onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                onChange={handleChange}
                 required
               />
             </div>
@@ -140,7 +162,7 @@ export default function EditExpenseModal({ expense, onClose, onSuccess }) {
               className="btn btn-primary"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
+              {isSubmitting ? 'Saving...' : 'Save'}
             </button>
           </div>
         </form>

@@ -1,25 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useExpenses } from '../contexts/ExpensesContext';
+import { useTransactions } from '../hooks/useExpenses';
 import Navbar from './Navbar';
-import ExpensesList from './ExpensesList';
-import AddExpense from './AddExpense';
+import TransactionForm from './TransactionForm';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { expenses, loading, error, addExpense, deleteExpense } = useExpenses();
+  const { expenses, income, loading, error, addTransaction, deleteTransaction, refreshTransactions } = useTransactions();
+  const [showExpenseForm, setShowExpenseForm] = useState(false);
+  const [showIncomeForm, setShowIncomeForm] = useState(false);
   const [userName, setUserName] = useState('');
-  const [currency, setCurrency] = useState(() => {
-    const saved = localStorage.getItem('currency');
-    return saved || 'USD';
-  });
-
-  const [formData, setFormData] = useState({
-    title: '',
-    amount: '',
-    category: 'other',
-    date: new Date().toISOString().split('T')[0],
-  });
+  const [successMessage, setSuccessMessage] = useState('');
 
   const currencySymbols = {
     USD: '$',
@@ -30,47 +21,40 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    localStorage.setItem('currency', currency);
-  }, [currency]);
-
-  useEffect(() => {
     if (user) {
       setUserName(user.user_metadata.name || '');
     }
   }, [user]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.title || !formData.amount) return;
-
-    try {
-      await addExpense({
-        title: formData.title,
-        amount: parseFloat(formData.amount),
-        category: formData.category,
-        date: formData.date,
-      });
-
-      setFormData({
-        title: '',
-        amount: '',
-        category: 'other',
-        date: new Date().toISOString().split('T')[0],
-      });
-    } catch (error) {
-      console.error('Error adding expense:', error);
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
+      return () => clearTimeout(timer);
     }
+  }, [successMessage]);
+
+  const handleExpenseClick = () => {
+    setShowExpenseForm(true);
+    setShowIncomeForm(false);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await deleteExpense(id);
-    } catch (error) {
-      console.error('Error deleting expense:', error);
-    }
+  const handleIncomeClick = () => {
+    setShowIncomeForm(true);
+    setShowExpenseForm(false);
   };
 
-  const totalSpent = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const calculateTotal = (transactions, type) => {
+    return transactions.reduce((sum, transaction) => {
+      const amount = parseFloat(transaction.amount);
+      return sum + (type === 'expense' ? -amount : amount);
+    }, 0).toFixed(2);
+  };
+
+  const handleEdit = (transaction) => {
+    console.log('Edit transaction:', transaction);
+  };
 
   if (loading) {
     return (
@@ -78,6 +62,17 @@ export default function Dashboard() {
         <Navbar />
         <div className="container">
           <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="page-container">
+        <Navbar />
+        <div className="container">
+          <p>Error: {error}</p>
         </div>
       </div>
     );
@@ -94,31 +89,152 @@ export default function Dashboard() {
           </div>
         </header>
 
-        {error ? (
-          <div className="error-message">{error}</div>
-        ) : (
-          <div className="dashboard-content">
-            <section className="expense-form-section card">
-              <AddExpense
-                formData={formData}
-                setFormData={setFormData}
-                handleSubmit={handleSubmit}
-                currency={currency}
-                setCurrency={setCurrency}
-                currencySymbols={currencySymbols}
-              />
-            </section>
-            <section className="expenses-section card">
-              <ExpensesList
-                expenses={expenses}
-                handleDelete={handleDelete}
-                currency={currency}
-                currencySymbols={currencySymbols}
-                totalSpent={totalSpent}
-              />
-            </section>
+        <div className="transaction-type-selector">
+          <button
+            className={`btn ${showExpenseForm ? 'btn-primary' : 'btn-outline'}`}
+            onClick={handleExpenseClick}
+          >
+            + Add Expense
+          </button>
+          <button
+            className={`btn ${showIncomeForm ? 'btn-primary' : 'btn-outline'}`}
+            onClick={handleIncomeClick}
+          >
+            + Add Income
+          </button>
+        </div>
+
+        {successMessage && (
+          <div className="success-message">
+            {successMessage}
           </div>
         )}
+
+        {showExpenseForm && (
+          <TransactionForm
+            onClose={() => {
+              setShowExpenseForm(false);
+              refreshTransactions();
+            }}
+            onSubmit={async (transaction) => {
+              try {
+                await addTransaction({
+                  ...transaction,
+                  amount: parseFloat(transaction.amount),
+                  type: 'expense'
+                });
+                setSuccessMessage('Expense added successfully!');
+              } catch (err) {
+                console.error(err.message);
+              }
+            }}
+            type="expense"
+          />
+        )}
+
+        {showIncomeForm && (
+          <TransactionForm
+            onClose={() => {
+              setShowIncomeForm(false);
+              refreshTransactions();
+            }}
+            onSubmit={async (transaction) => {
+              try {
+                await addTransaction({
+                  ...transaction,
+                  amount: parseFloat(transaction.amount),
+                  type: 'income'
+                });
+                setSuccessMessage('Income added successfully!');
+              } catch (err) {
+                console.error(err.message);
+              }
+            }}
+            type="income"
+          />
+        )}
+
+        <div className="dashboard-content">
+          <div className="transactions-container">
+            {/* Expenses Card */}
+            <section className="transactions-section">
+              <div className="transactions-header">
+                <h2>Expenses</h2>
+                <span className="total-amount">Total: -${calculateTotal(expenses, 'expense')}</span>
+              </div>
+              <div className="transactions-list">
+                {expenses.length === 0 ? (
+                  <div className="no-transactions">No expenses found</div>
+                ) : (
+                  expenses.map((transaction) => (
+                    <div key={transaction.id} className="transaction-item">
+                      <div className="transaction-details">
+                        <div className="transaction-amount">-${transaction.amount.toFixed(2)}</div>
+                        <div className="transaction-category">{transaction.category}</div>
+                        <div className="transaction-date">{new Date(transaction.date).toLocaleDateString()}</div>
+                      </div>
+                      <div className="transaction-actions">
+                        <button
+                          className="edit-btn"
+                          onClick={() => handleEdit(transaction)}
+                          aria-label="Edit expense"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="delete-btn"
+                          onClick={() => deleteTransaction(transaction.id)}
+                          aria-label="Delete expense"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </section>
+
+            {/* Income Card */}
+            <section className="transactions-section">
+              <div className="transactions-header">
+                <h2>Income</h2>
+                <span className="total-amount">Total: +${calculateTotal(income, 'income')}</span>
+              </div>
+              <div className="transactions-list">
+                {income.length === 0 ? (
+                  <div className="no-transactions">No income found</div>
+                ) : (
+                  income.map((transaction) => (
+                    <div key={transaction.id} className="transaction-item">
+                      <div className="transaction-details">
+                        <div className="transaction-amount">+${transaction.amount.toFixed(2)}</div>
+                        <div className="transaction-category">{transaction.category}</div>
+                        <div className="transaction-date">{new Date(transaction.date).toLocaleDateString()}</div>
+                      </div>
+                      <div className="transaction-actions">
+                        <button
+                          className="edit-btn"
+                          onClick={() => handleEdit(transaction)}
+                          aria-label="Edit income"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="delete-btn"
+                          onClick={() => deleteTransaction(transaction.id)}
+                          aria-label="Delete income"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </section>
+          </div>
+        </div>
       </main>
     </div>
   );

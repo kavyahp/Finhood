@@ -1,7 +1,6 @@
 import { supabase } from '../lib/supabaseClient'
 
 export const transactionsService = {
-  // Get all transactions for the current user
   async getTransactions(type = null) {
     const query = supabase
       .from('transactions')
@@ -17,7 +16,6 @@ export const transactionsService = {
     return data;
   },
 
-  // Add a new transaction
   async addTransaction(transaction) {
     const { data, error } = await supabase
       .from('transactions')
@@ -29,7 +27,6 @@ export const transactionsService = {
     return data;
   },
 
-  // Update an existing transaction
   async updateTransaction(id, updates) {
     const { data, error } = await supabase
       .from('transactions')
@@ -42,7 +39,6 @@ export const transactionsService = {
     return data;
   },
 
-  // Delete a transaction
   async deleteTransaction(id) {
     const { error } = await supabase
       .from('transactions')
@@ -52,7 +48,6 @@ export const transactionsService = {
     if (error) throw error;
   },
 
-  // Get transactions summary (total, by category, etc.)
   async getTransactionsSummary() {
     const { data, error } = await supabase
       .from('transactions')

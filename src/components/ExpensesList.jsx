@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useExpenses } from '../contexts/ExpensesContext';
+import { useTransactions } from '../contexts/TransactionsContext';
 import EditExpenseModal from './EditExpenseModal';
 
 export default function ExpensesList() {
-  const { expenses, loading, error, deleteExpense } = useExpenses();
+  const { expenses, loading, error, deleteExpense } = useTransactions();
   const [editingExpense, setEditingExpense] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
 

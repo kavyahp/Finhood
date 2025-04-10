@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { ExpensesProvider } from './contexts/ExpensesContext';
+import { TransactionsProvider } from './contexts/TransactionsContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
 import Signup from './components/Signup';
@@ -10,7 +10,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <ExpensesProvider>
+        <TransactionsProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
@@ -23,7 +23,7 @@ function App() {
               }
             />
           </Routes>
-        </ExpensesProvider>
+        </TransactionsProvider>
       </AuthProvider>
     </Router>
   );

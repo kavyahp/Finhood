@@ -1,53 +1,123 @@
 import { supabase } from '../lib/supabaseClient'
 
 export const authService = {
-  // Authentication methods
-  signUp: (data) => supabase.auth.signUp(data),
-  signIn: (data) => supabase.auth.signInWithPassword(data),
-  signOut: () => supabase.auth.signOut(),
-  getSession: () => supabase.auth.getSession(),
-  onAuthStateChange: (callback) => supabase.auth.onAuthStateChange(callback),
+  async signUp(email, password) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async signIn(email, password) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async signOut() {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  },
+
+  async getSession() {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    return session;
+  },
+
+  async getUser() {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error) throw error;
+    return user;
+  },
 }
 
-export const expenseService = {
-  // Expense CRUD operations
-  async getAllExpenses() {
-    const { data, error } = await supabase
-      .from('expenses')
-      .select('*')
-      .order('date', { ascending: false })
-    
-    if (error) throw error
-    return data
+export const transactionService = {
+  supabase,
+
+  async getAllTransactions() {
+    try {
+      const { data, error } = await this.supabase
+        .from('transactions')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+      throw error;
+    }
   },
 
-  async createExpense({ title, amount, category, date }) {
-    const { data, error } = await supabase
-      .from('expenses')
-      .insert([{ title, amount, category, date }])
-      .select()
-    
-    if (error) throw error
-    return data[0]
+  async getExpenses(userId) {
+    try {
+      const { data, error } = await this.supabase
+        .from('transactions')
+        .select('*')
+        .eq('type', 'expense')
+        .eq('user_id', userId)
+        .order('date', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching expenses:', error);
+      throw error;
+    }
   },
 
-  async updateExpense(id, updates) {
-    const { data, error } = await supabase
-      .from('expenses')
-      .update(updates)
-      .eq('id', id)
-      .select()
-    
-    if (error) throw error
-    return data[0]
+  async getIncomes(userId) {
+    try {
+      const { data, error } = await this.supabase
+        .from('transactions')
+        .select('*')
+        .eq('type', 'income')
+        .eq('user_id', userId)
+        .order('date', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching incomes:', error);
+      throw error;
+    }
   },
 
-  async deleteExpense(id) {
-    const { error } = await supabase
-      .from('expenses')
-      .delete()
-      .eq('id', id)
-    
-    if (error) throw error
+  async createTransaction(transactionData) {
+    try {
+      const { data, error } = await this.supabase
+        .from('transactions')
+        .insert([transactionData])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error creating transaction:', error);
+      throw error;
+    }
+  },
+
+  async deleteTransaction(id) {
+    try {
+      const { error } = await this.supabase
+        .from('transactions')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      throw error;
+    }
   }
 }
