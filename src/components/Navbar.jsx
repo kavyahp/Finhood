@@ -20,7 +20,7 @@ export default function Navbar() {
         <img src="/logo.png" alt="Finhood Logo" className="navbar-logo" />
         <button
           onClick={handleSignOut}
-          className="btn btn-outline navbar-signout"
+          className="navbar-signout"
         >
           Sign Out
         </button>

@@ -84,19 +84,21 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="page-container">
+    <div className="layout-grid">
       <Navbar />
-      <div className="container">
-        <div className="dashboard-header">
-          <h1>Dashboard</h1>
-          <p>Welcome, {userName ? userName : 'User'}!</p>
-        </div>
+      <main className="container">
+        <header className="dashboard-header">
+          <div className="header-content">
+            <h1>Dashboard</h1>
+            <p>Welcome, {userName ? userName : 'User'}!</p>
+          </div>
+        </header>
 
         {error ? (
           <div className="error-message">{error}</div>
         ) : (
           <div className="dashboard-content">
-            <div className="card">
+            <section className="expense-form-section card">
               <AddExpense
                 formData={formData}
                 setFormData={setFormData}
@@ -105,8 +107,8 @@ export default function Dashboard() {
                 setCurrency={setCurrency}
                 currencySymbols={currencySymbols}
               />
-            </div>
-            <div className="card mt-4">
+            </section>
+            <section className="expenses-section card">
               <ExpensesList
                 expenses={expenses}
                 handleDelete={handleDelete}
@@ -114,10 +116,10 @@ export default function Dashboard() {
                 currencySymbols={currencySymbols}
                 totalSpent={totalSpent}
               />
-            </div>
+            </section>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
