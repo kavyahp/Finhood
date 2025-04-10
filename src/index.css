@@ -190,6 +190,74 @@ label {
   width: 100%;
 }
 
+/* Expense Cards */
+.expenses-list {
+  width: 100%;
+}
+
+.expenses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.expense-card {
+  background: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 16px;
+  transition: all 0.2s;
+}
+
+.expense-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.expense-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.expense-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.expense-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.expense-details p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.delete-btn {
+  padding: 6px 12px;
+  font-size: 14px;
+  color: var(--error-color);
+  background-color: transparent;
+  border: 1px solid var(--error-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  background-color: var(--error-color);
+  color: white;
+}
+
 .dashboard-logo {
   height: 32px;
   width: auto;
