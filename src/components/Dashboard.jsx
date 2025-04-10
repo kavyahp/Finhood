@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTransactions } from '../hooks/useExpenses';
 import Navbar from './Navbar';
 import TransactionForm from './TransactionForm';
+import CurrencySelector from './CurrencySelector';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -83,9 +84,9 @@ export default function Dashboard() {
       <Navbar />
       <main className="container">
         <header className="dashboard-header">
-          <div className="header-content">
-            <h1>Dashboard</h1>
+          <div className="user-info">
             <p>Welcome, {userName ? userName : 'User'}!</p>
+            <CurrencySelector />
           </div>
         </header>
 

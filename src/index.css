@@ -348,10 +348,43 @@ label {
 /* Dashboard specific */
 .dashboard-header {
   display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
+  grid-template-columns: 1fr;
   gap: var(--grid-gap);
   width: 100%;
+  align-content: start;
+  padding: 0;
+  background: transparent;
+  position: relative;
+  z-index: 999;
+  margin-top: var(--navbar-height);
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--grid-gap);
+}
+
+.header-content h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.user-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--grid-gap);
+  padding: 1rem 0;
+}
+
+.user-info p {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .expense-form-section,
@@ -1100,4 +1133,38 @@ label {
   .transactions-container {
     grid-template-columns: 1fr;
   }
+}
+
+/* Currency selector styles */
+.currency-selector {
+  display: inline-block;
+}
+
+.currency-select {
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  color: var(--text-color);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+  min-width: 120px;
+}
+
+.currency-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(60, 179, 113, 0.1);
+}
+
+.currency-select option {
+  background: var(--card-background);
+  color: var(--text-color);
+  padding: 0.75rem 1rem;
 }
