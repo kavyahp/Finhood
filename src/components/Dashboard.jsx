@@ -3,13 +3,15 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTransactions } from '../hooks/useExpenses';
 import Navbar from './Navbar';
 import TransactionForm from './TransactionForm';
+import EditTransactionCard from './EditTransactionCard';
 import CurrencySelector from './CurrencySelector';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { expenses, income, loading, error, addTransaction, deleteTransaction, refreshTransactions } = useTransactions();
+  const { expenses, income, loading, error, addTransaction, deleteTransaction, updateTransaction, refreshTransactions } = useTransactions();
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [showIncomeForm, setShowIncomeForm] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState(null);
   const [userName, setUserName] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -54,7 +56,18 @@ export default function Dashboard() {
   };
 
   const handleEdit = (transaction) => {
-    console.log('Edit transaction:', transaction);
+    setEditingTransaction(transaction);
+  };
+
+  const handleEditSubmit = async (formData) => {
+    try {
+      await updateTransaction(editingTransaction.id, formData);
+      setSuccessMessage('Transaction updated successfully!');
+      setEditingTransaction(null);
+      refreshTransactions();
+    } catch (error) {
+      console.error('Error updating transaction:', error);
+    }
   };
 
   if (loading) {
@@ -123,6 +136,22 @@ export default function Dashboard() {
           <div className="success-message">
             {successMessage}
           </div>
+        )}
+
+        {editingTransaction && (
+          <>
+            <div className="edit-card-open" onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setEditingTransaction(null);
+              }
+            }}>
+            </div>
+            <EditTransactionCard
+              transaction={editingTransaction}
+              onClose={() => setEditingTransaction(null)}
+              onSubmit={handleEditSubmit}
+            />
+          </>
         )}
 
         {showIncomeForm && (

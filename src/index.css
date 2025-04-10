@@ -152,6 +152,129 @@
   color: #1976D2;
 }
 
+/* Edit Card Styles */
+.edit-card {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+/* Add backdrop blur effect when edit card is open */
+.edit-card-open {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  z-index: 999;
+}
+
+/* Navbar blur effect when edit card is open */
+.edit-card-open ~ .navbar,
+.edit-card-open ~ .container {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Ensure navbar stays above the blur overlay but below the edit card */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--navbar-height);
+  background-color: var(--card-background);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  z-index: 1000;
+  display: grid;
+  grid-template-columns: 1fr minmax(0, var(--content-max-width)) 1fr;
+  grid-template-areas: '. content .';
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Container blur effect when edit card is open */
+.container {
+  position: relative;
+  z-index: 999;
+}
+
+.edit-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.edit-card-header h3 {
+  color: var(--text-color);
+  margin: 0;
+}
+
+.edit-card-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.edit-card-close:hover {
+  color: var(--text-color);
+}
+
+.edit-card-grid {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.edit-card-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.edit-card-group label {
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.edit-card-group input,
+.edit-card-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.edit-card-group input:focus,
+.edit-card-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(60, 179, 113, 0.2);
+}
+
+.edit-card-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
 /* Base styles */
 :root {
   /* Colors */

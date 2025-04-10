@@ -38,23 +38,18 @@ function App() {
     <Router>
       <AuthProvider>
         <TransactionsProvider>
+          <Navbar />
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>
-                <>
-                  <Navbar />
-                  <Dashboard />
-                </>
+                <Dashboard />
               </ProtectedRoute>
             } />
             <Route path="/" element={
               <ProtectedRoute>
-                <>
-                  <Navbar />
-                  <Dashboard />
-                </>
+                <Dashboard />
               </ProtectedRoute>
             } />
           </Routes>
