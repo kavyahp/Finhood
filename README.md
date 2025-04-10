@@ -2,7 +2,7 @@
 
 **Finhood** is a simple, elegant expense tracker built for early-career professionals to help manage personal budgets with clarity and ease.
 
-![Finhood Logo](./public/finhood-logo.png) <!-- Replace with your actual logo path if different -->
+![Finhood Logo](/logo.png) <!-- Logo from public directory -->
 
 ---
 
