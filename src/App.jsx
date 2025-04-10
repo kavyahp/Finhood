@@ -1,11 +1,13 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { TransactionsProvider } from './contexts/TransactionsContext';
+import { CurrencyProvider } from './contexts/CurrencyContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Dashboard from './components/Dashboard';
 import Navbar from './components/Navbar';
+import CurrencySelector from './components/CurrencySelector';
 import { useAuth } from './contexts/AuthContext';
 
 function App() {
@@ -37,23 +39,26 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <TransactionsProvider>
-          <Navbar />
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-          </Routes>
-        </TransactionsProvider>
+        <CurrencyProvider>
+          <TransactionsProvider>
+            <Navbar />
+            <CurrencySelector />
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </TransactionsProvider>
+        </CurrencyProvider>
       </AuthProvider>
     </Router>
   );

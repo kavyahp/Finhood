@@ -10,7 +10,6 @@ export default function TransactionForm({ onClose, onSubmit, type = 'expense' })
   });
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,7 +41,6 @@ export default function TransactionForm({ onClose, onSubmit, type = 'expense' })
         amount: parseFloat(formData.amount),
         type,
       });
-      onClose();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -51,25 +49,17 @@ export default function TransactionForm({ onClose, onSubmit, type = 'expense' })
   };
 
   return (
-    <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="modal-overlay" onClick={(e) => {
+      if (e.target === e.currentTarget) {
+        onClose();
+      }
+    }}>
       <div className="modal-content">
         <div className="modal-header">
           <h2>{type === 'expense' ? 'Add Expense' : 'Add Income'}</h2>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
         
-        {successMessage && (
-          <div className="success-message">
-            {successMessage}
-            <button
-              className="message-close"
-              onClick={() => setSuccessMessage('')}
-            >
-              ×
-            </button>
-          </div>
-        )}
-
         {error && <div className="error-message">{error}</div>}
         
         <form onSubmit={handleSubmit} className="modal-form">

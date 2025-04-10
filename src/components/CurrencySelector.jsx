@@ -1,48 +1,48 @@
 import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabaseClient';
+import { useCurrency } from '../contexts/CurrencyContext';
 
-const currencies = {
-  USD: { symbol: '$', label: 'US Dollar' },
-  EUR: { symbol: '€', label: 'Euro' },
-  GBP: { symbol: '£', label: 'British Pound' },
-  INR: { symbol: '₹', label: 'Indian Rupee' },
-  JPY: { symbol: '¥', label: 'Japanese Yen' }
-};
+const CurrencySelector = () => {
+  const { currency, loading, updateCurrencyPreference } = useCurrency();
+  const [selectedCurrency, setSelectedCurrency] = useState(currency);
 
-export default function CurrencySelector() {
-  const [selectedCurrency, setSelectedCurrency] = useState('USD');
-  const { user } = useAuth();
+  const currencies = [
+    { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
+    { code: 'USD', symbol: '$', name: 'US Dollar' },
+    { code: 'EUR', symbol: '€', name: 'Euro' },
+    { code: 'GBP', symbol: '£', name: 'British Pound' },
+    { code: 'JPY', symbol: '¥', name: 'Japanese Yen' }
+  ];
 
-  const saveCurrencyPreference = async (currency) => {
+  const handleChange = async (event) => {
+    const newCurrency = event.target.value;
+    setSelectedCurrency(newCurrency);
     try {
-      await supabase
-        .from('user_preferences')
-        .upsert({
-          user_id: user.id,
-          currency: currency
-        });
+      await updateCurrencyPreference(newCurrency);
     } catch (error) {
-      console.error('Error saving currency preference:', error);
+      console.error('Failed to update currency preference:', error);
+      setSelectedCurrency(currency); // Revert back to previous value
     }
   };
+
+  if (loading) {
+    return <span>Loading...</span>;
+  }
 
   return (
     <div className="currency-selector">
       <select
         value={selectedCurrency}
-        onChange={(e) => {
-          setSelectedCurrency(e.target.value);
-          saveCurrencyPreference(e.target.value);
-        }}
+        onChange={handleChange}
         className="currency-select"
       >
-        {Object.entries(currencies).map(([code, { symbol, label }]) => (
-          <option key={code} value={code}>
-            {symbol} {label}
+        {currencies.map((currency) => (
+          <option key={currency.code} value={currency.code}>
+            {currency.symbol} {currency.name}
           </option>
         ))}
       </select>
     </div>
   );
-}
+};
+
+export default CurrencySelector;

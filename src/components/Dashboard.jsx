@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTransactions } from '../hooks/useExpenses';
+import { useCurrency } from '../contexts/CurrencyContext';
 import Navbar from './Navbar';
 import TransactionForm from './TransactionForm';
 import EditTransactionCard from './EditTransactionCard';
@@ -9,6 +10,7 @@ import CurrencySelector from './CurrencySelector';
 export default function Dashboard() {
   const { user } = useAuth();
   const { expenses, income, loading, error, addTransaction, deleteTransaction, updateTransaction, refreshTransactions } = useTransactions();
+  const { currency } = useCurrency();
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [showIncomeForm, setShowIncomeForm] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
@@ -55,6 +57,13 @@ export default function Dashboard() {
     }, 0).toFixed(2);
   };
 
+  const formatAmount = (amount, type) => {
+    const symbol = currencySymbols[currency] || currencySymbols.INR;
+    const prefix = type === 'expense' ? '-' : '+';
+    const numericAmount = parseFloat(amount) || 0;
+    return `${prefix}${symbol}${numericAmount.toFixed(2)}`;
+  };
+
   const handleEdit = (transaction) => {
     setEditingTransaction(transaction);
   };
@@ -69,6 +78,16 @@ export default function Dashboard() {
       console.error('Error updating transaction:', error);
       setSuccessMessage('Error updating transaction. Please try again.');
     }
+  };
+
+  const handleCloseExpenseForm = () => {
+    setShowExpenseForm(false);
+    setShowIncomeForm(false);
+  };
+
+  const handleCloseIncomeForm = () => {
+    setShowIncomeForm(false);
+    setShowExpenseForm(false);
   };
 
   if (loading) {
@@ -140,61 +159,51 @@ export default function Dashboard() {
         )}
 
         {editingTransaction && (
-          <>
-            <div className="edit-card-open" onClick={(e) => {
-              if (e.target === e.currentTarget) {
-                setEditingTransaction(null);
-              }
-            }}>
-            </div>
-            <EditTransactionCard
-              transaction={editingTransaction}
-              onClose={() => setEditingTransaction(null)}
-              onSubmit={handleEditSubmit}
-            />
-          </>
+          <EditTransactionCard
+            transaction={editingTransaction}
+            onSubmit={handleEditSubmit}
+            onClose={() => setEditingTransaction(null)}
+          />
         )}
 
         {showIncomeForm && (
           <TransactionForm
-            onClose={() => {
-              setShowIncomeForm(false);
-              refreshTransactions();
-            }}
-            onSubmit={async (transaction) => {
+            onSubmit={async (formData) => {
               try {
                 await addTransaction({
-                  ...transaction,
-                  amount: parseFloat(transaction.amount),
+                  ...formData,
                   type: 'income'
                 });
                 setSuccessMessage('Income added successfully!');
+                handleCloseIncomeForm();
+                refreshTransactions();
               } catch (err) {
                 console.error(err.message);
+                setSuccessMessage('Error adding income. Please try again.');
               }
             }}
+            onClose={handleCloseIncomeForm}
             type="income"
           />
         )}
 
         {showExpenseForm && (
           <TransactionForm
-            onClose={() => {
-              setShowExpenseForm(false);
-              refreshTransactions();
-            }}
-            onSubmit={async (transaction) => {
+            onSubmit={async (formData) => {
               try {
                 await addTransaction({
-                  ...transaction,
-                  amount: parseFloat(transaction.amount),
+                  ...formData,
                   type: 'expense'
                 });
                 setSuccessMessage('Expense added successfully!');
+                handleCloseExpenseForm();
+                refreshTransactions();
               } catch (err) {
                 console.error(err.message);
+                setSuccessMessage('Error adding expense. Please try again.');
               }
             }}
+            onClose={handleCloseExpenseForm}
             type="expense"
           />
         )}
@@ -205,7 +214,7 @@ export default function Dashboard() {
             <section className="transactions-section">
               <div className="transactions-header">
                 <h2>Income</h2>
-                <span className="total-amount">Total: +${calculateTotal(income, 'income')}</span>
+                <span className="total-amount">Total: {formatAmount(calculateTotal(income, 'income'), 'income')}</span>
               </div>
               <div className="transactions-list">
                 {income.length === 0 ? (
@@ -214,7 +223,7 @@ export default function Dashboard() {
                   income.map((transaction) => (
                     <div key={transaction.id} className="transaction-item">
                       <div className="transaction-details">
-                        <div className="transaction-amount">+${transaction.amount.toFixed(2)}</div>
+                        <div className="transaction-amount">{formatAmount(transaction.amount, 'income')}</div>
                         <div className="transaction-category">{transaction.category}</div>
                         <div className="transaction-date">{new Date(transaction.date).toLocaleDateString()}</div>
                       </div>
@@ -244,7 +253,7 @@ export default function Dashboard() {
             <section className="transactions-section">
               <div className="transactions-header">
                 <h2>Expenses</h2>
-                <span className="total-amount">Total: -${calculateTotal(expenses, 'expense')}</span>
+                <span className="total-amount">Total: {formatAmount(calculateTotal(expenses, 'expense'), 'expense')}</span>
               </div>
               <div className="transactions-list">
                 {expenses.length === 0 ? (
@@ -253,7 +262,7 @@ export default function Dashboard() {
                   expenses.map((transaction) => (
                     <div key={transaction.id} className="transaction-item">
                       <div className="transaction-details">
-                        <div className="transaction-amount">-${transaction.amount.toFixed(2)}</div>
+                        <div className="transaction-amount">{formatAmount(transaction.amount, 'expense')}</div>
                         <div className="transaction-category">{transaction.category}</div>
                         <div className="transaction-date">{new Date(transaction.date).toLocaleDateString()}</div>
                       </div>
