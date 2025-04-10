@@ -18,8 +18,10 @@
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 32rem;
-  max-height: calc(100vh - 2rem);
-  overflow-y: auto;
+  max-height: calc(100vh - 4rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   animation: modal-appear 0.2s ease-out;
 }
 
@@ -53,11 +55,65 @@
   color: var(--text-color);
 }
 
+.modal-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--grid-gap);
+  padding: var(--card-padding);
+  overflow-y: auto;
+}
+
+.form-grid {
+  display: grid;
+  gap: var(--grid-gap);
+  width: 100%;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.form-group label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(60, 179, 113, 0.1);
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: var(--grid-gap);
-  margin-top: var(--grid-gap);
+  padding: 0 var(--card-padding) var(--card-padding);
+  background-color: var(--card-background);
+  border-top: 1px solid var(--border-color);
+}
+
+.error-message {
+  color: var(--error-color);
+  background-color: rgba(220, 38, 38, 0.1);
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  text-align: center;
+  margin-bottom: var(--grid-gap);
 }
 
 @keyframes modal-appear {

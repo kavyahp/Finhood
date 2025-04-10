@@ -58,70 +58,72 @@ export default function EditExpenseModal({ expense, onClose, onSuccess }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content">
         <div className="modal-header">
           <h2>Edit Expense</h2>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
         
-        <form onSubmit={handleSubmit} className="form-grid">
+        <form onSubmit={handleSubmit} className="modal-form">
           {error && <div className="error-message">{error}</div>}
           
-          <div className="form-group">
-            <label htmlFor="title">Title</label>
-            <input
-              type="text"
-              id="title"
-              className="input"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="Expense title"
-              required
-            />
-          </div>
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="title">Title</label>
+              <input
+                type="text"
+                id="title"
+                className="input"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Expense title"
+                required
+              />
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="amount">Amount</label>
-            <input
-              type="number"
-              id="amount"
-              className="input"
-              value={formData.amount}
-              onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-              placeholder="0.00"
-              step="0.01"
-              min="0"
-              required
-            />
-          </div>
+            <div className="form-group">
+              <label htmlFor="amount">Amount</label>
+              <input
+                type="number"
+                id="amount"
+                className="input"
+                value={formData.amount}
+                onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+                required
+              />
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="category">Category</label>
-            <select
-              id="category"
-              className="input"
-              value={formData.category}
-              onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-            >
-              <option value="food">Food</option>
-              <option value="transport">Transport</option>
-              <option value="utilities">Utilities</option>
-              <option value="entertainment">Entertainment</option>
-              <option value="shopping">Shopping</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
+            <div className="form-group">
+              <label htmlFor="category">Category</label>
+              <select
+                id="category"
+                className="input"
+                value={formData.category}
+                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+              >
+                <option value="food">Food</option>
+                <option value="transport">Transport</option>
+                <option value="utilities">Utilities</option>
+                <option value="entertainment">Entertainment</option>
+                <option value="shopping">Shopping</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="date">Date</label>
-            <input
-              type="date"
-              id="date"
-              className="input"
-              value={formData.date}
-              onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
-              required
-            />
+            <div className="form-group">
+              <label htmlFor="date">Date</label>
+              <input
+                type="date"
+                id="date"
+                className="input"
+                value={formData.date}
+                onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                required
+              />
+            </div>
           </div>
 
           <div className="form-actions">
