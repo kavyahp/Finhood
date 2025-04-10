@@ -127,6 +127,31 @@
   }
 }
 
+.modal-form .btn {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal-form .btn:hover {
+  background-color: #1976D2;
+}
+
+.modal-form .btn-outline {
+  background-color: transparent;
+  border: 1px solid #2196F3;
+  color: #2196F3;
+}
+
+.modal-form .btn-outline:hover {
+  background-color: #E3F2FD;
+  color: #1976D2;
+}
+
 /* Base styles */
 :root {
   /* Colors */
@@ -862,6 +887,19 @@ label {
 .expense-form-submit:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.expense-button {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.expense-button:hover {
+  background-color: #2196F3;
 }
 
 /* Responsive adjustments for expense form */

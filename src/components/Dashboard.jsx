@@ -98,7 +98,21 @@ export default function Dashboard() {
             + Add Income
           </button>
           <button
-            className="btn accent-bg"
+            type="button"
+            className="btn btn-primary"
+            style={{
+              backgroundColor: '#2196F3',
+              color: 'white',
+              border: 'none',
+              padding: '10px 18px',
+              borderRadius: '6px',
+              fontWeight: '600',
+              fontSize: '16px',
+              width: '100%',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
             onClick={handleExpenseClick}
           >
             + Add Expense
