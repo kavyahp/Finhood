@@ -112,13 +112,23 @@ export function AuthProvider({ children }) {
     try {
       setLoading(true)
       setError(null)
+      
+      // First clear the local storage
+      localStorage.removeItem('supabase.auth.token')
+      
+      // Then try to sign out from Supabase
       const { error } = await supabase.auth.signOut()
       
-      if (error) throw error
+      // Regardless of the signOut error, clear the user state
       setUser(null)
-      localStorage.removeItem('supabase.auth.token')
-      // Clear any auth-related state
-      setError(null)
+      
+      if (error) {
+        console.error('Error during sign out:', error)
+        // Still clear the error state since we want to redirect
+        setError(null)
+      }
+      
+      // Return true to indicate we should proceed with navigation
       return true
     } catch (error) {
       console.error('Error during sign out:', error)
