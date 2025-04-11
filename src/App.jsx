@@ -1,6 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { supabase } from './lib/supabaseClient';
 import { AuthProvider } from './contexts/AuthContext';
 import { TransactionsProvider } from './contexts/TransactionsContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
@@ -25,7 +23,6 @@ function App() {
             <AuthCheck>
               <Routes>
                 <Route path="/" element={<LandingPage />} />
-                <Route path="/landing" element={<LandingPage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route
@@ -40,7 +37,7 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                <Route path="*" element={<Navigate to="/landing" replace />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </AuthCheck>
           </TransactionsProvider>
