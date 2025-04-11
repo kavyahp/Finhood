@@ -223,9 +223,10 @@ export default function Dashboard() {
                   income.map((transaction) => (
                     <div key={transaction.id} className="transaction-item">
                       <div className="transaction-details">
-                        <div className="transaction-amount">{formatAmount(transaction.amount, 'income')}</div>
-                        <div className="transaction-category">{transaction.category}</div>
-                        <div className="transaction-date">{new Date(transaction.date).toLocaleDateString()}</div>
+                        <span className="transaction-title">{transaction.title}</span>
+                        <span className="transaction-amount">{formatAmount(transaction.amount, 'income')}</span>
+                        <span className="transaction-category">{transaction.category}</span>
+                        <span className="transaction-date">{new Date(transaction.date).toLocaleDateString()}</span>
                       </div>
                       <div className="transaction-actions">
                         <button
@@ -262,9 +263,10 @@ export default function Dashboard() {
                   expenses.map((transaction) => (
                     <div key={transaction.id} className="transaction-item">
                       <div className="transaction-details">
-                        <div className="transaction-amount">{formatAmount(transaction.amount, 'expense')}</div>
-                        <div className="transaction-category">{transaction.category}</div>
-                        <div className="transaction-date">{new Date(transaction.date).toLocaleDateString()}</div>
+                        <span className="transaction-title">{transaction.title}</span>
+                        <span className="transaction-amount">{formatAmount(transaction.amount, 'expense')}</span>
+                        <span className="transaction-category">{transaction.category}</span>
+                        <span className="transaction-date">{new Date(transaction.date).toLocaleDateString()}</span>
                       </div>
                       <div className="transaction-actions">
                         <button

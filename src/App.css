@@ -1,3 +1,59 @@
+/* Reset styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Remove default list styles */
+ul, ol {
+  list-style: none;
+}
+
+/* Remove default button styles */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+/* Remove default input styles */
+input, select {
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Reset spacing for transaction elements */
+.transaction-item {
+  margin: 0;
+  padding: 0;
+}
+
+.transaction-item * {
+  margin: 0;
+  padding: 0;
+}
+
+.transaction-item .transaction-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+}
+
+.transaction-item .transaction-title,
+.transaction-item .transaction-amount,
+.transaction-item .transaction-category,
+.transaction-item .transaction-date {
+  margin: 0;
+  padding: 0;
+}
+
 /* Base styles */
 body {
   margin: 0;
@@ -89,6 +145,96 @@ button:hover {
   padding: 0.5rem;
   border: 1px solid #e5e7eb;
   border-radius: 0.375rem;
+}
+
+/* Transaction styles */
+.transactions-list {
+  display: block;
+  padding: 0;
+  margin: 0;
+}
+
+.transaction-item {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.transaction-item .transaction-details {
+  display: block;
+  padding: 1rem;
+  margin: 0;
+}
+
+.transaction-item .transaction-title,
+.transaction-item .transaction-amount,
+.transaction-item .transaction-category,
+.transaction-item .transaction-date {
+  display: block;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.transaction-item .transaction-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.transaction-item .transaction-amount {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #2196f3;
+  margin-bottom: 0.5rem;
+}
+
+.transaction-item .transaction-category {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 0.5rem;
+}
+
+.transaction-item .transaction-date {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-bottom: 0;
+}
+
+.transaction-item .transaction-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0 1rem 1rem;
+}
+
+.transaction-item .edit-btn,
+.transaction-item .delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.transaction-item .edit-btn {
+  color: #2196f3;
+}
+
+.transaction-item .delete-btn {
+  color: #ef4444;
+}
+
+.transaction-item .edit-btn:hover {
+  background-color: #e0f2fe;
+}
+
+.transaction-item .delete-btn:hover {
+  background-color: #fee2e2;
 }
 
 /* Loading states */
