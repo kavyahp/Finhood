@@ -14,7 +14,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false
+    detectSessionInUrl: false,
+    flowType: 'pkce', // Use PKCE flow for better security
+    storageKey: 'supabase.auth.token',
   },
   global: {
     headers: {
@@ -24,13 +26,26 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       try {
         const response = await fetch(...args);
         if (!response.ok) {
-          const error = new Error('Network response was not ok');
+          // Handle common error cases
+          if (response.status === 401) {
+            // Token expired or invalid
+            const error = new Error('Session expired. Please log in again.');
+            error.code = 'session_expired';
+            throw error;
+          }
+          
+          const error = new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
           error.response = response;
           throw error;
         }
         return response;
       } catch (error) {
         console.error('Fetch error:', error);
+        if (error.code === 'session_expired') {
+          // Clear local storage and redirect to login
+          localStorage.removeItem('supabase.auth.token');
+          window.location.href = '/login';
+        }
         throw error;
       }
     }
@@ -42,11 +57,19 @@ export const initializeSupabase = async () => {
   try {
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error) throw error;
+    
+    // If session exists but is expired, handle it
+    if (session && session.expires_at && session.expires_at < Date.now() / 1000) {
+      console.log('Session expired, clearing token');
+      localStorage.removeItem('supabase.auth.token');
+      return null;
+    }
+    
     console.log('Supabase initialized successfully:', { isAuthenticated: !!session });
     return session;
   } catch (error) {
     console.error('Failed to initialize Supabase:', error);
-    throw error;
+    return null;
   }
 };
 

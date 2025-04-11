@@ -15,6 +15,17 @@ export function AuthProvider({ children }) {
         setLoading(true)
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
         if (sessionError) throw sessionError
+        
+        // Handle expired session
+        if (session && session.expires_at && session.expires_at < Date.now() / 1000) {
+          console.log('Session expired, clearing token')
+          localStorage.removeItem('supabase.auth.token')
+          setUser(null)
+          setError('Session expired. Please log in again.')
+          window.location.href = '/login'
+          return
+        }
+
         setUser(session?.user ?? null)
         setLoading(false)
         setError(null)
@@ -23,6 +34,10 @@ export function AuthProvider({ children }) {
         setUser(null)
         setLoading(false)
         setError(error.message)
+        // If it's a session expiration error, redirect to login
+        if (error.message.includes('Session expired')) {
+          window.location.href = '/login'
+        }
       }
     }
 
@@ -32,6 +47,16 @@ export function AuthProvider({ children }) {
   // Listen for auth state changes
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Handle expired session
+      if (session && session.expires_at && session.expires_at < Date.now() / 1000) {
+        console.log('Session expired, clearing token')
+        localStorage.removeItem('supabase.auth.token')
+        setUser(null)
+        setError('Session expired. Please log in again.')
+        window.location.href = '/login'
+        return
+      }
+
       setUser(session?.user ?? null)
     })
 
@@ -91,6 +116,7 @@ export function AuthProvider({ children }) {
       
       if (error) throw error
       setUser(null)
+      localStorage.removeItem('supabase.auth.token')
     } catch (error) {
       console.error('Error during sign out:', error)
       setError(error.message)
