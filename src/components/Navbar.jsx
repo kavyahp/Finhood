@@ -8,7 +8,8 @@ export default function Navbar() {
   const handleSignOut = async () => {
     try {
       await signOut();
-      navigate('/login');
+      // Navigate to login after successful sign out
+      navigate('/login', { replace: true });
     } catch (error) {
       console.error('Error signing out:', error);
     }

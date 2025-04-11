@@ -117,6 +117,9 @@ export function AuthProvider({ children }) {
       if (error) throw error
       setUser(null)
       localStorage.removeItem('supabase.auth.token')
+      // Clear any auth-related state
+      setError(null)
+      return true
     } catch (error) {
       console.error('Error during sign out:', error)
       setError(error.message)
