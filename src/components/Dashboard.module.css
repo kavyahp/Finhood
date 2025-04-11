@@ -1,0 +1,81 @@
+:root {
+  --color-primary: #2563eb;
+  --color-secondary: #1e40af;
+  --color-text: #1f2937;
+  --color-background: #ffffff;
+  --color-border: #e5e7eb;
+  --spacing-unit: 0.5rem;
+  --border-radius: 0.5rem;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-unit);
+  padding: calc(var(--spacing-unit) * 4);
+}
+
+@media (min-width: 768px) {
+  .dashboard {
+    grid-template-columns: 250px 1fr;
+    padding: calc(var(--spacing-unit) * 4) calc(var(--spacing-unit) * 6);
+  }
+}
+
+.sidebar {
+  background-color: var(--color-background);
+  border-radius: var(--border-radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: calc(var(--spacing-unit) * 2);
+}
+
+.content {
+  background-color: var(--color-background);
+  border-radius: var(--border-radius);
+  padding: calc(var(--spacing-unit) * 3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.expenses-list {
+  margin-top: calc(var(--spacing-unit) * 2);
+}
+
+.expense-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: calc(var(--spacing-unit) * 2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.expense-item:last-child {
+  border-bottom: none;
+}
+
+.expense-amount {
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.expense-category {
+  font-size: 0.875rem;
+  color: var(--color-secondary);
+}
+
+.expense-date {
+  font-size: 0.75rem;
+  color: var(--color-secondary);
+}
+
+@media (max-width: 767px) {
+  .expense-item {
+    flex-direction: column;
+    gap: calc(var(--spacing-unit) * 1);
+  }
+  
+  .expense-amount,
+  .expense-category,
+  .expense-date {
+    margin: 0;
+  }
+}
