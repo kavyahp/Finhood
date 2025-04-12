@@ -15,6 +15,7 @@ import CurrencySelector from './components/CurrencySelector';
 import Signup from './components/Signup';
 import ProtectedRoute from './components/ProtectedRoute';
 import AuthCheck from './components/AuthCheck';
+import EmailVerification from './components/EmailVerification';
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
@@ -46,6 +47,7 @@ function App() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+                <Route path="/auth/callback" element={<EmailVerification />} />
                 <Route
                   path="/dashboard"
                   element={
