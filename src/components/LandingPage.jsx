@@ -9,7 +9,9 @@ const LandingPage = () => {
       <nav className={styles.navbar}>
         <div className={styles.container}>
           <div className={styles.navbarContainer}>
-            <div className={styles.navbarLogo}>Finhood</div>
+            <div className={styles.navbarLogo}>
+              <img src="/logo.png" alt="Finhood" />
+            </div>
             <div className={styles.navbarButtons}>
               <Link to="/login" className={styles.navbarButtonSecondary}>
                 Log In

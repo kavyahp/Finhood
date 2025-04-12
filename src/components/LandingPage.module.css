@@ -118,7 +118,8 @@
 .navbar {
   background-color: var(--background-light);
   box-shadow: var(--card-shadow);
-  padding: calc(var(--spacing-unit) * 4) 0;
+  height: 5rem;
+  padding: 0;
   position: sticky;
   top: 0;
   z-index: 50;
@@ -132,13 +133,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 100%;
+  padding: 0 var(--side-padding);
 }
 
 .navbarLogo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-color);
-  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+}
+
+.navbarLogo img {
+  height: 140px;
+  width: auto;
+  margin-top: -30px;
+  margin-bottom: -30px;
+  position: relative;
+  z-index: 2;
 }
 
 .navbarButtons {
@@ -147,7 +157,7 @@
 }
 
 .navbarButtonSecondary {
-  padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 3);
+  padding: 10px 18px;
   border: 1px solid var(--primary-color);
   border-radius: var(--border-radius);
   background-color: transparent;
@@ -155,6 +165,10 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .navbarButtonSecondary:hover {
@@ -163,7 +177,7 @@
 }
 
 .navbarButtonPrimary {
-  padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 3);
+  padding: 10px 18px;
   border: none;
   border-radius: var(--border-radius);
   background-color: var(--primary-color);
@@ -172,6 +186,10 @@
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: var(--card-shadow);
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .navbarButtonPrimary:hover {
@@ -182,7 +200,7 @@
 
 /* Hero Section */
 .hero {
-  padding: calc(var(--section-padding) * 2) 0;
+  padding: calc(var(--section-padding) * 3) 0;
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   position: relative;
   overflow: hidden;
