@@ -7,11 +7,15 @@ export default function Navbar() {
 
   const handleSignOut = async () => {
     try {
+      // First attempt to sign out
       await signOut();
-      // Navigate to login after successful sign out
+
+      // Then navigate to the login page after successful sign out
       navigate('/login', { replace: true });
     } catch (error) {
       console.error('Error signing out:', error);
+      // If there's an error, still try to navigate to login
+      navigate('/login', { replace: true });
     }
   };
 
