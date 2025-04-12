@@ -151,6 +151,29 @@
   z-index: 2;
 }
 
+@media (max-width: 640px) {
+  .navbar {
+    height: 4rem;
+  }
+
+  .navbarLogo img {
+    height: 100px;
+    margin-top: -20px;
+    margin-bottom: -20px;
+  }
+
+  .navbarButtons {
+    gap: calc(var(--spacing-unit) * 1);
+  }
+
+  .navbarButtonSecondary,
+  .navbarButtonPrimary {
+    padding: 8px 16px;
+    font-size: 14px;
+    height: 36px;
+  }
+}
+
 .navbarButtons {
   display: flex;
   gap: calc(var(--spacing-unit) * 2);
@@ -200,18 +223,6 @@
   background-color: #1976d2;
   transform: translateY(-1px);
   box-shadow: var(--hover-shadow);
-}
-
-@media (max-width: 640px) {
-  .navbarButtons {
-    gap: calc(var(--spacing-unit) * 1);
-  }
-
-  .navbarButtonSecondary,
-  .navbarButtonPrimary {
-    padding: 8px 16px;
-    font-size: 14px;
-  }
 }
 
 /* Hero Section */
