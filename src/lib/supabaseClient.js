@@ -33,7 +33,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
             error.code = 'session_expired';
             throw error;
           }
-          
+
           const error = new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
           error.response = response;
           throw error;
@@ -57,14 +57,14 @@ export const initializeSupabase = async () => {
   try {
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error) throw error;
-    
+
     // If session exists but is expired, handle it
     if (session && session.expires_at && session.expires_at < Date.now() / 1000) {
       console.log('Session expired, clearing token');
       localStorage.removeItem('supabase.auth.token');
       return null;
     }
-    
+
     console.log('Supabase initialized successfully:', { isAuthenticated: !!session });
     return session;
   } catch (error) {

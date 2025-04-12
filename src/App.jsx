@@ -1,5 +1,10 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { TransactionsProvider } from './contexts/TransactionsContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import LandingPage from './components/LandingPage';
@@ -11,12 +16,28 @@ import Signup from './components/Signup';
 import ProtectedRoute from './components/ProtectedRoute';
 import AuthCheck from './components/AuthCheck';
 
+function PrivateRoute({ children }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="page-container">
+        <div className="loading-spinner">Loading...</div>
+      </div>
+    );
+  }
+
+  return user ? children : <Navigate to="/login" />;
+}
+
 function App() {
   return (
-    <Router future={{
-      v7_relativeSplatPath: true,
-      v7_startTransition: true
-    }}>
+    <Router
+      future={{
+        v7_relativeSplatPath: true,
+        v7_startTransition: true,
+      }}
+    >
       <AuthProvider>
         <CurrencyProvider>
           <TransactionsProvider>
@@ -28,13 +49,13 @@ function App() {
                 <Route
                   path="/dashboard"
                   element={
-                    <ProtectedRoute>
+                    <PrivateRoute>
                       <div className="app-container">
                         <Navbar />
                         <CurrencySelector />
                         <Dashboard />
                       </div>
-                    </ProtectedRoute>
+                    </PrivateRoute>
                   }
                 />
                 <Route path="*" element={<Navigate to="/" replace />} />

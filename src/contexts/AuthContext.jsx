@@ -1,160 +1,95 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-import { supabase } from '../lib/supabaseClient'
+import { createContext, useContext, useEffect, useState } from 'react';
+import { supabase } from '../lib/supabaseClient';
 
-const AuthContext = createContext({})
+const AuthContext = createContext({});
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState(null);
 
-  // Check for existing session on mount
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        setLoading(true)
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-        if (sessionError) throw sessionError
-        
-        // Handle expired session
-        if (session && session.expires_at && session.expires_at < Date.now() / 1000) {
-          console.log('Session expired, clearing token')
-          localStorage.removeItem('supabase.auth.token')
-          setUser(null)
-          setError('Session expired. Please log in again.')
-          window.location.href = '/login'
-          return
-        }
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
-        setUser(session?.user ?? null)
-        setLoading(false)
-        setError(null)
-      } catch (error) {
-        console.error('Error checking session:', error)
-        setUser(null)
-        setLoading(false)
-        setError(error.message)
-        // If it's a session expiration error, redirect to login
-        if (error.message.includes('Session expired')) {
-          window.location.href = '/login'
-        }
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+
+      if (event === 'TOKEN_REFRESHED') {
+        // Token was refreshed successfully
+        console.log('Token refreshed successfully');
+      } else if (event === 'SIGNED_OUT') {
+        // Clear any stored session data
+        setSession(null);
+        setUser(null);
       }
-    }
+    });
 
-    checkSession()
-  }, [])
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
-  // Listen for auth state changes
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      // Handle expired session
-      if (session && session.expires_at && session.expires_at < Date.now() / 1000) {
-        console.log('Session expired, clearing token')
-        localStorage.removeItem('supabase.auth.token')
-        setUser(null)
-        setError('Session expired. Please log in again.')
-        window.location.href = '/login'
-        return
-      }
-
-      setUser(session?.user ?? null)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  const signUp = async (data) => {
+  const signUp = async ({ email, password, metadata }) => {
     try {
-      setLoading(true)
-      setError(null)
-      const { data: { user }, error } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
         options: {
-          data: {
-            name: data.metadata?.name
-          }
-        }
-      })
-      
-      if (error) throw error
-      return user
+          data: metadata,
+        },
+      });
+      if (error) throw error;
+      return { data, error: null };
     } catch (error) {
-      console.error('Error during signup:', error)
-      setError(error.message)
-      throw error
-    } finally {
-      setLoading(false)
+      return { data: null, error };
     }
-  }
+  };
 
-  const signIn = async (data) => {
+  const signIn = async ({ email, password }) => {
     try {
-      setLoading(true)
-      setError(null)
-      const { data: { user }, error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password
-      })
-      
-      if (error) throw error
-      return user
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      return { data, error: null };
     } catch (error) {
-      console.error('Error during sign in:', error)
-      setError(error.message)
-      throw error
-    } finally {
-      setLoading(false)
+      return { data: null, error };
     }
-  }
+  };
 
   const signOut = async () => {
     try {
-      setLoading(true)
-      setError(null)
-      
-      // First clear the local storage
-      localStorage.removeItem('supabase.auth.token')
-      
-      // Then try to sign out from Supabase
-      const { error } = await supabase.auth.signOut()
-      
-      // Regardless of the signOut error, clear the user state
-      setUser(null)
-      
-      if (error) {
-        console.error('Error during sign out:', error)
-        // Still clear the error state since we want to redirect
-        setError(null)
-      }
-      
-      // Return true to indicate we should proceed with navigation
-      return true
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      return { error: null };
     } catch (error) {
-      console.error('Error during sign out:', error)
-      setError(error.message)
-      throw error
-    } finally {
-      setLoading(false)
+      return { error };
     }
-  }
+  };
 
   const value = {
+    user,
+    session,
+    loading,
     signUp,
     signIn,
     signOut,
-    user,
-    loading,
-    error,
-    isAuthenticated: !!user,
-    clearError: () => setError(null)
-  }
+  };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export const useAuth = () => useContext(AuthContext)
+export function useAuth() {
+  return useContext(AuthContext);
+}

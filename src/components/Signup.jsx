@@ -26,7 +26,7 @@ export default function Signup() {
         password: formData.password,
         metadata: {
           name: formData.name,
-        }
+        },
       });
 
       if (error) throw error;
@@ -59,7 +59,8 @@ export default function Signup() {
           {error && <div className="error-message">{error}</div>}
           {showVerificationMessage ? (
             <div className="verification-message">
-              📩 Please check your email to verify your account. We'll redirect you to login in a few seconds.
+              📩 Please check your email to verify your account. We'll redirect
+              you to login in a few seconds.
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="auth-card-form">
@@ -68,7 +69,9 @@ export default function Signup() {
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -77,7 +80,9 @@ export default function Signup() {
                 <input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -86,13 +91,15 @@ export default function Signup() {
                 <input
                   type="password"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   required
                 />
               </div>
-              <button 
-                type="submit" 
-                className="auth-card-button" 
+              <button
+                type="submit"
+                className="auth-card-button"
                 disabled={loading}
               >
                 {loading ? 'Creating account...' : 'Sign up'}
@@ -102,8 +109,7 @@ export default function Signup() {
         </div>
 
         <div className="auth-card-footer">
-          Already have an account?{' '}
-          <Link to="/login">Login</Link>
+          Already have an account? <Link to="/login">Login</Link>
         </div>
       </div>
     </div>
