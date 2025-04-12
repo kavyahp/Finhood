@@ -8,18 +8,47 @@ export default function ProtectedRoute({ children }) {
   const location = useLocation();
 
   useEffect(() => {
+    let mounted = true;
+    let timeoutId;
+
     const checkSession = async () => {
       try {
+        // Set a timeout to prevent infinite loading
+        timeoutId = setTimeout(() => {
+          if (mounted) {
+            console.log('Session check timed out, redirecting to login');
+            setUser(null);
+            setLoading(false);
+          }
+        }, 5000); // 5 second timeout
+
         const {
           data: { session },
           error,
         } = await supabase.auth.getSession();
-        if (error) throw error;
-        setUser(session?.user ?? null);
+
+        // Clear timeout since we got a response
+        if (timeoutId) clearTimeout(timeoutId);
+
+        if (error) {
+          console.error('Error checking session:', error);
+          if (mounted) {
+            setUser(null);
+            setLoading(false);
+          }
+          return;
+        }
+
+        if (mounted) {
+          setUser(session?.user ?? null);
+          setLoading(false);
+        }
       } catch (error) {
         console.error('Error checking session:', error);
-      } finally {
-        setLoading(false);
+        if (mounted) {
+          setUser(null);
+          setLoading(false);
+        }
       }
     };
 
@@ -29,13 +58,26 @@ export default function ProtectedRoute({ children }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      if (mounted) {
+        setUser(session?.user ?? null);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
+      subscription.unsubscribe();
+    };
   }, []);
 
-  if (loading) return <div className="loading-container">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   if (!user) {
     // Redirect to login with the return URL

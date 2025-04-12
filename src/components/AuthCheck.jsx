@@ -9,34 +9,72 @@ export default function AuthCheck({ children }) {
   const location = useLocation();
 
   useEffect(() => {
-    // Initialize auth state
+    let mounted = true;
+    let timeoutId;
+
+    // Initialize auth state with timeout
     const initializeAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        setUser(session?.user ?? null);
-        
-        // Handle initial navigation
-        handleNavigation(session?.user);
+        // Set a timeout to prevent infinite loading
+        timeoutId = setTimeout(() => {
+          if (mounted) {
+            console.log('Auth check timed out, proceeding with null user');
+            setUser(null);
+            setLoading(false);
+            handleNavigation(null);
+          }
+        }, 5000); // 5 second timeout
+
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        // Clear timeout since we got a response
+        if (timeoutId) clearTimeout(timeoutId);
+
+        if (error) {
+          console.error('Error checking auth:', error);
+          if (mounted) {
+            setUser(null);
+            setLoading(false);
+            handleNavigation(null);
+          }
+          return;
+        }
+
+        if (mounted) {
+          setUser(session?.user ?? null);
+          setLoading(false);
+          handleNavigation(session?.user);
+        }
       } catch (error) {
         console.error('Error checking auth:', error);
-        setUser(null);
-        handleNavigation(null);
-      } finally {
-        setLoading(false);
+        if (mounted) {
+          setUser(null);
+          setLoading(false);
+          handleNavigation(null);
+        }
       }
     };
 
     initializeAuth();
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      // Handle navigation on auth state change
-      handleNavigation(session?.user);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (mounted) {
+        setUser(session?.user ?? null);
+        handleNavigation(session?.user);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
+      subscription.unsubscribe();
+    };
   }, [navigate, location]);
 
   // Handle navigation based on auth status
@@ -46,15 +84,21 @@ export default function AuthCheck({ children }) {
       navigate('/dashboard', { replace: true });
     }
     // If user is not authenticated and not on landing/login/signup
-    else if (!sessionUser && ![
-      '/', '/landing', '/login', '/signup'
-    ].includes(location.pathname)) {
+    else if (
+      !sessionUser &&
+      !['/', '/landing', '/login', '/signup'].includes(location.pathname)
+    ) {
       navigate('/landing', { replace: true });
     }
   };
 
   if (loading) {
-    return <div className="loading-container">Loading...</div>;
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   return children;

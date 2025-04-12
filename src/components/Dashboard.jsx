@@ -9,7 +9,16 @@ import CurrencySelector from './CurrencySelector';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { expenses, income, loading, error, addTransaction, deleteTransaction, updateTransaction, refreshTransactions } = useTransactions();
+  const {
+    expenses,
+    income,
+    loading,
+    error,
+    addTransaction,
+    deleteTransaction,
+    updateTransaction,
+    refreshTransactions,
+  } = useTransactions();
   const { currency } = useCurrency();
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [showIncomeForm, setShowIncomeForm] = useState(false);
@@ -51,10 +60,12 @@ export default function Dashboard() {
   };
 
   const calculateTotal = (transactions, type) => {
-    return transactions.reduce((sum, transaction) => {
-      const amount = parseFloat(transaction.amount);
-      return sum + (type === 'expense' ? -amount : amount);
-    }, 0).toFixed(2);
+    return transactions
+      .reduce((sum, transaction) => {
+        const amount = parseFloat(transaction.amount);
+        return sum + (type === 'expense' ? -amount : amount);
+      }, 0)
+      .toFixed(2);
   };
 
   const formatAmount = (amount, type) => {
@@ -144,7 +155,7 @@ export default function Dashboard() {
               width: '100%',
               display: 'inline-flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
             }}
             onClick={handleExpenseClick}
           >
@@ -153,9 +164,7 @@ export default function Dashboard() {
         </div>
 
         {successMessage && (
-          <div className="success-message">
-            {successMessage}
-          </div>
+          <div className="success-message">{successMessage}</div>
         )}
 
         {editingTransaction && (
@@ -172,7 +181,7 @@ export default function Dashboard() {
               try {
                 await addTransaction({
                   ...formData,
-                  type: 'income'
+                  type: 'income',
                 });
                 setSuccessMessage('Income added successfully!');
                 handleCloseIncomeForm();
@@ -193,7 +202,7 @@ export default function Dashboard() {
               try {
                 await addTransaction({
                   ...formData,
-                  type: 'expense'
+                  type: 'expense',
                 });
                 setSuccessMessage('Expense added successfully!');
                 handleCloseExpenseForm();
@@ -214,7 +223,10 @@ export default function Dashboard() {
             <section className="transactions-section">
               <div className="transactions-header">
                 <h2>Income</h2>
-                <span className="total-amount">Total: {formatAmount(calculateTotal(income, 'income'), 'income')}</span>
+                <span className="total-amount">
+                  Total:{' '}
+                  {formatAmount(calculateTotal(income, 'income'), 'income')}
+                </span>
               </div>
               <div className="transactions-list">
                 {income.length === 0 ? (
@@ -223,10 +235,18 @@ export default function Dashboard() {
                   income.map((transaction) => (
                     <div key={transaction.id} className="transaction-item">
                       <div className="transaction-details">
-                        <span className="transaction-title">{transaction.title}</span>
-                        <span className="transaction-amount">{formatAmount(transaction.amount, 'income')}</span>
-                        <span className="transaction-category">{transaction.category}</span>
-                        <span className="transaction-date">{new Date(transaction.date).toLocaleDateString()}</span>
+                        <span className="transaction-title">
+                          {transaction.title}
+                        </span>
+                        <span className="transaction-amount">
+                          {formatAmount(transaction.amount, 'income')}
+                        </span>
+                        <span className="transaction-category">
+                          {transaction.category}
+                        </span>
+                        <span className="transaction-date">
+                          {new Date(transaction.date).toLocaleDateString()}
+                        </span>
                       </div>
                       <div className="transaction-actions">
                         <button
@@ -254,7 +274,10 @@ export default function Dashboard() {
             <section className="transactions-section">
               <div className="transactions-header">
                 <h2>Expenses</h2>
-                <span className="total-amount">Total: {formatAmount(calculateTotal(expenses, 'expense'), 'expense')}</span>
+                <span className="total-amount">
+                  Total:{' '}
+                  {formatAmount(calculateTotal(expenses, 'expense'), 'expense')}
+                </span>
               </div>
               <div className="transactions-list">
                 {expenses.length === 0 ? (
@@ -263,10 +286,18 @@ export default function Dashboard() {
                   expenses.map((transaction) => (
                     <div key={transaction.id} className="transaction-item">
                       <div className="transaction-details">
-                        <span className="transaction-title">{transaction.title}</span>
-                        <span className="transaction-amount">{formatAmount(transaction.amount, 'expense')}</span>
-                        <span className="transaction-category">{transaction.category}</span>
-                        <span className="transaction-date">{new Date(transaction.date).toLocaleDateString()}</span>
+                        <span className="transaction-title">
+                          {transaction.title}
+                        </span>
+                        <span className="transaction-amount">
+                          {formatAmount(transaction.amount, 'expense')}
+                        </span>
+                        <span className="transaction-category">
+                          {transaction.category}
+                        </span>
+                        <span className="transaction-date">
+                          {new Date(transaction.date).toLocaleDateString()}
+                        </span>
                       </div>
                       <div className="transaction-actions">
                         <button
