@@ -20,18 +20,19 @@ export function AuthProvider({ children }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+      console.log('Auth state changed:', event, session);
 
-      if (event === 'TOKEN_REFRESHED') {
-        // Token was refreshed successfully
-        console.log('Token refreshed successfully');
-      } else if (event === 'SIGNED_OUT') {
-        // Clear any stored session data
+      if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
+        // Clear session data
         setSession(null);
         setUser(null);
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        // Update session data
+        setSession(session);
+        setUser(session?.user ?? null);
       }
+
+      setLoading(false);
     });
 
     return () => {
@@ -89,10 +90,24 @@ export function AuthProvider({ children }) {
 
   const signOut = async () => {
     try {
+      // Clear local session data first
+      setSession(null);
+      setUser(null);
+
+      // Then attempt to sign out from Supabase
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+
+      // Clear any stored session data
+      localStorage.removeItem('supabase.auth.token');
+
       return { error: null };
     } catch (error) {
+      console.error('Sign out error:', error);
+      // Even if there's an error, ensure we clear local state
+      setSession(null);
+      setUser(null);
+      localStorage.removeItem('supabase.auth.token');
       return { error };
     }
   };

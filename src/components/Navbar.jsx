@@ -7,14 +7,21 @@ export default function Navbar() {
 
   const handleSignOut = async () => {
     try {
-      // First attempt to sign out
-      await signOut();
+      // First clear local state and storage
+      localStorage.removeItem('supabase.auth.token');
 
-      // Then navigate to the login page after successful sign out
+      // Then attempt to sign out from Supabase
+      const { error } = await signOut();
+
+      if (error) {
+        console.error('Error during sign out:', error);
+      }
+
+      // Always navigate to login page, regardless of sign-out success
       navigate('/login', { replace: true });
     } catch (error) {
-      console.error('Error signing out:', error);
-      // If there's an error, still try to navigate to login
+      console.error('Unexpected error during sign out:', error);
+      // Even if there's an error, ensure we redirect to login
       navigate('/login', { replace: true });
     }
   };

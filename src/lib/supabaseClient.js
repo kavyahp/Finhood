@@ -15,7 +15,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
-    flowType: 'pkce', // Use PKCE flow for better security
+    flowType: 'pkce',
     storageKey: 'supabase.auth.token',
   },
   global: {
@@ -25,41 +25,47 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     fetch: async (...args) => {
       try {
         const response = await fetch(...args);
+        
         if (!response.ok) {
           // Handle common error cases
           if (response.status === 401) {
             // Token expired or invalid
+            localStorage.removeItem('supabase.auth.token');
+            window.location.href = '/login';
             const error = new Error('Session expired. Please log in again.');
             error.code = 'session_expired';
             throw error;
           }
           
-          if (response.status === 400) {
-            // Bad request - try to get more details from the response
-            let errorMessage = `Network response was not ok: ${response.status} ${response.statusText}`;
-            try {
-              const errorData = await response.json();
-              if (errorData && errorData.message) {
-                errorMessage = errorData.message;
-              }
-            } catch (e) {
-              // If we can't parse the JSON, just use the status text
-              console.error('Could not parse error response:', e);
-            }
-            
-            const error = new Error(errorMessage);
-            error.response = response;
+          if (response.status === 403) {
+            // Permission denied or invalid token
+            localStorage.removeItem('supabase.auth.token');
+            window.location.href = '/login';
+            const error = new Error('Access denied. Please log in again.');
+            error.code = 'access_denied';
             throw error;
           }
 
-          const error = new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+          // Handle other error cases
+          let errorMessage = `Network response was not ok: ${response.status} ${response.statusText}`;
+          try {
+            const errorData = await response.json();
+            if (errorData && errorData.message) {
+              errorMessage = errorData.message;
+            }
+          } catch (e) {
+            console.error('Could not parse error response:', e);
+          }
+          
+          const error = new Error(errorMessage);
           error.response = response;
           throw error;
         }
+        
         return response;
       } catch (error) {
         console.error('Fetch error:', error);
-        if (error.code === 'session_expired') {
+        if (error.code === 'session_expired' || error.code === 'access_denied') {
           // Clear local storage and redirect to login
           localStorage.removeItem('supabase.auth.token');
           window.location.href = '/login';
