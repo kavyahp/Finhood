@@ -13,15 +13,33 @@ export default function ProtectedRoute({ children }) {
 
     const checkSession = async () => {
       try {
-        // Set a timeout to prevent infinite loading
+        // Set a shorter timeout for mobile devices
         timeoutId = setTimeout(() => {
           if (mounted) {
             console.log('Session check timed out, redirecting to login');
             setUser(null);
             setLoading(false);
           }
-        }, 5000); // 5 second timeout
+        }, 2000); // 2 second timeout (reduced from 5s)
 
+        // Check if we already have a session in localStorage to speed up initial load
+        const storedSession = localStorage.getItem('supabase.auth.token');
+        if (storedSession) {
+          try {
+            const parsedSession = JSON.parse(storedSession);
+            if (parsedSession && parsedSession.access_token) {
+              // We have a token, set user immediately and verify in background
+              if (mounted) {
+                setUser({ id: parsedSession.user?.id });
+                setLoading(false);
+              }
+            }
+          } catch (e) {
+            console.error('Error parsing stored session:', e);
+          }
+        }
+
+        // Verify session with Supabase
         const {
           data: { session },
           error,
