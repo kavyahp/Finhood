@@ -17,7 +17,7 @@ export default function Login() {
         email: formData.email,
         password: formData.password,
       });
-      
+
       if (user) {
         navigate('/dashboard');
       }
@@ -59,10 +59,7 @@ export default function Login() {
           {error && (
             <div className="error-message">
               {error}
-              <button 
-                className="clear-error-button" 
-                onClick={clearError}
-              >
+              <button className="clear-error-button" onClick={clearError}>
                 Clear Error
               </button>
             </div>
@@ -73,8 +70,7 @@ export default function Login() {
         </form>
 
         <div className="auth-card-footer">
-          Don't have an account?{' '}
-          <Link to="/signup">Sign up</Link>
+          Don't have an account? <Link to="/signup">Sign up</Link>
         </div>
       </div>
     </div>

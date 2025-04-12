@@ -10,7 +10,10 @@ export default function ProtectedRoute({ children }) {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
         if (error) throw error;
         setUser(session?.user ?? null);
       } catch (error) {
@@ -23,7 +26,9 @@ export default function ProtectedRoute({ children }) {
     checkSession();
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
