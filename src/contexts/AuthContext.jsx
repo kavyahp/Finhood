@@ -89,27 +89,10 @@ export function AuthProvider({ children }) {
 
   const signOut = async () => {
     try {
-      console.log('AuthContext: Attempting to sign out user');
-
-      // Clear any stored session data first
-      setSession(null);
-      setUser(null);
-
-      // Call Supabase signOut
       const { error } = await supabase.auth.signOut();
-
-      if (error) {
-        console.error('AuthContext: Sign out error from Supabase:', error);
-        throw error;
-      }
-
-      // Clear any local storage items related to auth
-      localStorage.removeItem('supabase.auth.token');
-
-      console.log('AuthContext: Sign out successful');
+      if (error) throw error;
       return { error: null };
     } catch (error) {
-      console.error('AuthContext: Sign out exception:', error);
       return { error };
     }
   };

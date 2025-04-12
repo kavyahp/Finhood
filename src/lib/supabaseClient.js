@@ -87,14 +87,5 @@ export const initializeSupabase = async () => {
   }
 };
 
-// Helper function to clear all auth-related data
-export const clearAuthData = () => {
-  localStorage.removeItem('supabase.auth.token');
-  localStorage.removeItem('supabase.auth.expires_at');
-  localStorage.removeItem('supabase.auth.refresh_token');
-  localStorage.removeItem('supabase.auth.provider_token');
-  localStorage.removeItem('supabase.auth.provider_refresh_token');
-};
-
 // Initialize when the module loads
 initializeSupabase().catch(console.error);

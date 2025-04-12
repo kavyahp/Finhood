@@ -1,6 +1,5 @@
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { clearAuthData } from '../lib/supabaseClient';
 
 export default function Navbar() {
   const { signOut } = useAuth();
@@ -8,25 +7,11 @@ export default function Navbar() {
 
   const handleSignOut = async () => {
     try {
-      console.log('Attempting to sign out...');
-      const { error } = await signOut();
-
-      if (error) {
-        console.error('Error during sign out:', error);
-        return;
-      }
-
-      console.log('Sign out successful, clearing auth data...');
-      clearAuthData();
-
-      console.log('Redirecting to login...');
-      // Force a hard redirect to login page to ensure complete sign out
-      window.location.href = '/login';
+      await signOut();
+      // Navigate to login after successful sign out
+      navigate('/login', { replace: true });
     } catch (error) {
       console.error('Error signing out:', error);
-      // Clear auth data and redirect even if there's an error
-      clearAuthData();
-      window.location.href = '/login';
     }
   };
 
