@@ -33,6 +33,24 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
             error.code = 'session_expired';
             throw error;
           }
+          
+          if (response.status === 400) {
+            // Bad request - try to get more details from the response
+            let errorMessage = `Network response was not ok: ${response.status} ${response.statusText}`;
+            try {
+              const errorData = await response.json();
+              if (errorData && errorData.message) {
+                errorMessage = errorData.message;
+              }
+            } catch (e) {
+              // If we can't parse the JSON, just use the status text
+              console.error('Could not parse error response:', e);
+            }
+            
+            const error = new Error(errorMessage);
+            error.response = response;
+            throw error;
+          }
 
           const error = new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
           error.response = response;
@@ -52,25 +70,30 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   }
 });
 
-// Initialize the client and test connection
+// Initialize Supabase and check connection
 export const initializeSupabase = async () => {
   try {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    if (error) throw error;
-
-    // If session exists but is expired, handle it
-    if (session && session.expires_at && session.expires_at < Date.now() / 1000) {
-      console.log('Session expired, clearing token');
-      localStorage.removeItem('supabase.auth.token');
-      return null;
+    // Test the connection by getting the current session
+    const { data, error } = await supabase.auth.getSession();
+    if (error) {
+      console.error('Supabase initialization error:', error);
+      return false;
     }
-
-    console.log('Supabase initialized successfully:', { isAuthenticated: !!session });
-    return session;
+    console.log('Supabase initialized successfully');
+    return true;
   } catch (error) {
-    console.error('Failed to initialize Supabase:', error);
-    return null;
+    console.error('Supabase initialization exception:', error);
+    return false;
   }
+};
+
+// Helper function to clear all auth-related data
+export const clearAuthData = () => {
+  localStorage.removeItem('supabase.auth.token');
+  localStorage.removeItem('supabase.auth.expires_at');
+  localStorage.removeItem('supabase.auth.refresh_token');
+  localStorage.removeItem('supabase.auth.provider_token');
+  localStorage.removeItem('supabase.auth.provider_refresh_token');
 };
 
 // Initialize when the module loads

@@ -41,16 +41,35 @@ export function AuthProvider({ children }) {
 
   const signUp = async ({ email, password, metadata }) => {
     try {
+      console.log('AuthContext: Attempting to sign up user with email:', email);
+
+      // Validate inputs
+      if (!email || !password) {
+        throw new Error('Email and password are required');
+      }
+
+      if (password.length < 6) {
+        throw new Error('Password must be at least 6 characters long');
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: metadata,
+          emailRedirectTo: `${window.location.origin}/login`,
         },
       });
-      if (error) throw error;
+
+      if (error) {
+        console.error('AuthContext: Signup error from Supabase:', error);
+        throw error;
+      }
+
+      console.log('AuthContext: Signup successful:', data);
       return { data, error: null };
     } catch (error) {
+      console.error('AuthContext: Signup exception:', error);
       return { data: null, error };
     }
   };
@@ -70,10 +89,27 @@ export function AuthProvider({ children }) {
 
   const signOut = async () => {
     try {
+      console.log('AuthContext: Attempting to sign out user');
+
+      // Clear any stored session data first
+      setSession(null);
+      setUser(null);
+
+      // Call Supabase signOut
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+
+      if (error) {
+        console.error('AuthContext: Sign out error from Supabase:', error);
+        throw error;
+      }
+
+      // Clear any local storage items related to auth
+      localStorage.removeItem('supabase.auth.token');
+
+      console.log('AuthContext: Sign out successful');
       return { error: null };
     } catch (error) {
+      console.error('AuthContext: Sign out exception:', error);
       return { error };
     }
   };

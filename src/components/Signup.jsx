@@ -15,12 +15,47 @@ export default function Signup() {
   });
   const [showVerificationMessage, setShowVerificationMessage] = useState(false);
 
+  const validateForm = () => {
+    // Check if name is provided
+    if (!formData.name.trim()) {
+      setError('Please enter your name');
+      return false;
+    }
+
+    // Check if email is valid
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return false;
+    }
+
+    // Check if password meets requirements
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    // Validate form before submission
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
 
     try {
+      console.log('Attempting to sign up with:', {
+        email: formData.email,
+        password: '********',
+        metadata: { name: formData.name },
+      });
+
       const { error } = await signUp({
         email: formData.email,
         password: formData.password,
@@ -29,14 +64,20 @@ export default function Signup() {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Signup error:', error);
+        throw error;
+      }
 
       setShowVerificationMessage(true);
       setTimeout(() => {
         navigate('/login');
       }, 5000);
     } catch (err) {
-      setError(err.message);
+      console.error('Signup exception:', err);
+      setError(
+        err.message || 'An error occurred during signup. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
@@ -68,10 +109,9 @@ export default function Signup() {
                 <label>Full Name</label>
                 <input
                   type="text"
+                  name="name"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
+                  onChange={handleInputChange}
                   required
                 />
               </div>
@@ -79,10 +119,9 @@ export default function Signup() {
                 <label>Email</label>
                 <input
                   type="email"
+                  name="email"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  onChange={handleInputChange}
                   required
                 />
               </div>
@@ -90,12 +129,13 @@ export default function Signup() {
                 <label>Password</label>
                 <input
                   type="password"
+                  name="password"
                   value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
+                  onChange={handleInputChange}
                   required
+                  minLength={6}
                 />
+                <small>Password must be at least 6 characters long</small>
               </div>
               <button
                 type="submit"
