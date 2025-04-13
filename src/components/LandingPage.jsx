@@ -140,15 +140,15 @@ const LandingPage = () => {
           <h2 className={styles.sectionTitle}>What Our Users Say</h2>
           <div className={styles.testimonialsGrid}>
             <div className={styles.testimonialCard}>
-              <div className={styles.testimonialAvatar}>J</div>
+              <div className={styles.testimonialAvatar}>R</div>
               <div className={styles.testimonialContent}>
                 <p className={styles.testimonialQuote}>
                   "Finhood has completely transformed how I manage my finances.
-                  The AI insights are incredibly helpful and have saved me
-                  hundreds each month!"
+                  The Expense tracking and budgeting tools are incredibly
+                  helpful and have saved me hundreds each month!"
                 </p>
                 <div className={styles.testimonialAuthor}>
-                  <span className={styles.testimonialName}>Jane Doe</span>
+                  <span className={styles.testimonialName}>Rohan Mehta</span>
                   <span className={styles.testimonialRole}>
                     Financial Analyst
                   </span>
@@ -156,7 +156,7 @@ const LandingPage = () => {
               </div>
             </div>
             <div className={styles.testimonialCard}>
-              <div className={styles.testimonialAvatar}>M</div>
+              <div className={styles.testimonialAvatar}>A</div>
               <div className={styles.testimonialContent}>
                 <p className={styles.testimonialQuote}>
                   "The budgeting tools are so intuitive and the analytics
@@ -164,21 +164,21 @@ const LandingPage = () => {
                   going without the stress."
                 </p>
                 <div className={styles.testimonialAuthor}>
-                  <span className={styles.testimonialName}>Mike Smith</span>
+                  <span className={styles.testimonialName}>Arjun Iyer</span>
                   <span className={styles.testimonialRole}>Entrepreneur</span>
                 </div>
               </div>
             </div>
             <div className={styles.testimonialCard}>
-              <div className={styles.testimonialAvatar}>S</div>
+              <div className={styles.testimonialAvatar}>P</div>
               <div className={styles.testimonialContent}>
                 <p className={styles.testimonialQuote}>
-                  "I've saved so much money since using Finhood's AI
-                  recommendations. It's like having a financial advisor in my
-                  pocket who knows exactly what I need."
+                  "I've saved so much money since using Finhood. It's like
+                  having a financial advisor in my pocket who knows exactly what
+                  I need."
                 </p>
                 <div className={styles.testimonialAuthor}>
-                  <span className={styles.testimonialName}>Sarah Johnson</span>
+                  <span className={styles.testimonialName}>Priya Sinha</span>
                   <span className={styles.testimonialRole}>Investor</span>
                 </div>
               </div>
