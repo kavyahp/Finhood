@@ -4,7 +4,7 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthProvider } from './contexts/AuthContext';
 import { TransactionsProvider } from './contexts/TransactionsContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import LandingPage from './components/LandingPage';
@@ -33,12 +33,7 @@ function PrivateRoute({ children }) {
 
 function App() {
   return (
-    <Router
-      future={{
-        v7_relativeSplatPath: true,
-        v7_startTransition: true,
-      }}
-    >
+    <Router>
       <AuthProvider>
         <CurrencyProvider>
           <TransactionsProvider>
@@ -49,15 +44,11 @@ function App() {
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/auth/callback" element={<EmailVerification />} />
                 <Route
-                  path="/dashboard"
+                  path="/dashboard/*"
                   element={
-                    <PrivateRoute>
-                      <div className="app-container">
-                        <Navbar />
-                        <CurrencySelector />
-                        <Dashboard />
-                      </div>
-                    </PrivateRoute>
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
                   }
                 />
                 <Route path="*" element={<Navigate to="/" replace />} />

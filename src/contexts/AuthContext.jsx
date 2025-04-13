@@ -89,20 +89,28 @@ export function AuthProvider({ children }) {
 
   const signOut = async () => {
     try {
-      // Clear local storage first to prevent issues
+      // First clear local storage to prevent future auth issues
       localStorage.removeItem('supabase.auth.token');
 
-      // Then attempt to sign out from Supabase
+      // Attempt to sign out from Supabase
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
 
-      // Clear the session and user state
+      // Even if there's an error, we want to clear the local state
       setSession(null);
       setUser(null);
+
+      // If there was an error but it's a 403, we can ignore it as the session is already invalid
+      if (error && error.status !== 403) {
+        console.error('Non-403 error during sign out:', error);
+        throw error;
+      }
 
       return { error: null };
     } catch (error) {
       console.error('Error during sign out:', error);
+      // Still clear the session state even if there's an error
+      setSession(null);
+      setUser(null);
       return { error };
     }
   };

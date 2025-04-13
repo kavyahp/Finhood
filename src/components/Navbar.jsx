@@ -13,15 +13,17 @@ export default function Navbar() {
       // Then attempt to sign out
       await signOut();
 
-      // Clear any local storage items that might be causing issues
+      // Clear any remaining session data
       localStorage.removeItem('supabase.auth.token');
 
       // Force a page reload to ensure clean state
       window.location.reload();
     } catch (error) {
-      console.error('Error signing out:', error);
-      // If there's an error, still try to navigate to login
+      console.error('Error during sign out:', error);
+      // If there's an error, still try to navigate to login and clear the session
+      localStorage.removeItem('supabase.auth.token');
       navigate('/login', { replace: true });
+      window.location.reload();
     }
   };
 

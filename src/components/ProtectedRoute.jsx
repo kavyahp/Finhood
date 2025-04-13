@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
+import styles from './AuthCheck.module.css';
 
 export default function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [isValidSession, setIsValidSession] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -19,24 +21,20 @@ export default function ProtectedRoute({ children }) {
             console.log('Session check timed out, redirecting to login');
             setUser(null);
             setLoading(false);
+            setIsValidSession(false);
+            // Clear any potentially invalid session data
+            localStorage.removeItem('supabase.auth.token');
           }
-        }, 2000); // 2 second timeout (reduced from 5s)
+        }, 3000); // 3 second timeout
 
-        // Check if we already have a session in localStorage to speed up initial load
+        // First, check if the URL is /dashboard but there's no stored session
         const storedSession = localStorage.getItem('supabase.auth.token');
-        if (storedSession) {
-          try {
-            const parsedSession = JSON.parse(storedSession);
-            if (parsedSession && parsedSession.access_token) {
-              // We have a token, set user immediately and verify in background
-              if (mounted) {
-                setUser({ id: parsedSession.user?.id });
-                setLoading(false);
-              }
-            }
-          } catch (e) {
-            console.error('Error parsing stored session:', e);
-          }
+        if (!storedSession && location.pathname === '/dashboard') {
+          console.log('No stored session found, redirecting to login');
+          setUser(null);
+          setLoading(false);
+          setIsValidSession(false);
+          return;
         }
 
         // Verify session with Supabase
@@ -48,24 +46,31 @@ export default function ProtectedRoute({ children }) {
         // Clear timeout since we got a response
         if (timeoutId) clearTimeout(timeoutId);
 
-        if (error) {
-          console.error('Error checking session:', error);
+        if (error || !session) {
+          console.error('Error checking session or no session found:', error);
           if (mounted) {
             setUser(null);
             setLoading(false);
+            setIsValidSession(false);
+            // Clear invalid session data
+            localStorage.removeItem('supabase.auth.token');
           }
           return;
         }
 
         if (mounted) {
-          setUser(session?.user ?? null);
+          setUser(session.user);
+          setIsValidSession(true);
           setLoading(false);
         }
       } catch (error) {
         console.error('Error checking session:', error);
         if (mounted) {
           setUser(null);
+          setIsValidSession(false);
           setLoading(false);
+          // Clear potentially corrupted session data
+          localStorage.removeItem('supabase.auth.token');
         }
       }
     };
@@ -75,9 +80,17 @@ export default function ProtectedRoute({ children }) {
     // Listen for auth state changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (mounted) {
-        setUser(session?.user ?? null);
+        if (session) {
+          setUser(session.user);
+          setIsValidSession(true);
+        } else {
+          setUser(null);
+          setIsValidSession(false);
+          // Clear session data on sign out
+          localStorage.removeItem('supabase.auth.token');
+        }
       }
     });
 
@@ -86,18 +99,20 @@ export default function ProtectedRoute({ children }) {
       if (timeoutId) clearTimeout(timeoutId);
       subscription.unsubscribe();
     };
-  }, []);
+  }, [location.pathname]);
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Loading...</p>
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p className={styles.loadingText}>Verifying your session...</p>
       </div>
     );
   }
 
-  if (!user) {
+  if (!user || !isValidSession) {
+    // Clear any invalid session data before redirecting
+    localStorage.removeItem('supabase.auth.token');
     // Redirect to login with the return URL
     return <Navigate to="/login" state={{ from: location }} replace />;
   }

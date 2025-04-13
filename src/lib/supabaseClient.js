@@ -51,44 +51,48 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     fetch: async (...args) => {
       try {
         const response = await fetch(...args);
+        
+        // Handle 403 errors specially for auth endpoints
+        if (response.status === 403 && args[0].includes('/auth/v1')) {
+          // Clear the session if we get a 403 on an auth endpoint
+          localStorage.removeItem('supabase.auth.token');
+          return response;
+        }
+        
         if (!response.ok) {
           // Handle common error cases
           if (response.status === 401) {
             // Token expired or invalid
             const error = new Error('Session expired. Please log in again.');
-            error.code = 'session_expired';
+            error.status = 401;
             throw error;
           }
           
-          if (response.status === 400) {
-            // Bad request - try to get more details from the response
-            let errorMessage = `Network response was not ok: ${response.status} ${response.statusText}`;
-            try {
-              const errorData = await response.json();
-              if (errorData && errorData.message) {
-                errorMessage = errorData.message;
-              }
-            } catch (e) {
-              // If we can't parse the JSON, just use the status text
-              console.error('Could not parse error response:', e);
+          let errorMessage = `Network response was not ok: ${response.status} ${response.statusText}`;
+          try {
+            const errorData = await response.json();
+            if (errorData && errorData.message) {
+              errorMessage = errorData.message;
             }
-            
-            const error = new Error(errorMessage);
-            error.response = response;
-            throw error;
+          } catch (e) {
+            // If we can't parse the JSON, just use the status text
+            console.error('Could not parse error response:', e);
           }
-
-          const error = new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+          
+          const error = new Error(errorMessage);
+          error.status = response.status;
           error.response = response;
           throw error;
         }
         return response;
       } catch (error) {
         console.error('Fetch error:', error);
-        if (error.code === 'session_expired') {
+        if (error.status === 401 || error.status === 403) {
           // Clear local storage and redirect to login
           localStorage.removeItem('supabase.auth.token');
-          window.location.href = '/login';
+          if (window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
         }
         throw error;
       }
