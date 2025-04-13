@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
+import styles from './AuthCheck.module.css';
 
 export default function AuthCheck({ children }) {
   const [loading, setLoading] = useState(true);
@@ -23,7 +24,7 @@ export default function AuthCheck({ children }) {
             setLoading(false);
             handleNavigation(null);
           }
-        }, 2000); // 2 second timeout (reduced from 5s)
+        }, 3000); // 3 second timeout
 
         // Check if we already have a session in localStorage to speed up initial load
         const storedSession = localStorage.getItem('supabase.auth.token');
@@ -102,20 +103,20 @@ export default function AuthCheck({ children }) {
     if (sessionUser && !location.pathname.startsWith('/dashboard')) {
       navigate('/dashboard', { replace: true });
     }
-    // If user is not authenticated and not on landing/login/signup
+    // If user is not authenticated and not on landing/login/signup/auth/callback
     else if (
       !sessionUser &&
-      !['/', '/landing', '/login', '/signup'].includes(location.pathname)
+      !['/', '/login', '/signup', '/auth/callback'].includes(location.pathname)
     ) {
-      navigate('/landing', { replace: true });
+      navigate('/', { replace: true });
     }
   };
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Loading...</p>
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p className={styles.loadingText}>Loading your account...</p>
       </div>
     );
   }

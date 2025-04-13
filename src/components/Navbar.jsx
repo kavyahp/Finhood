@@ -7,11 +7,17 @@ export default function Navbar() {
 
   const handleSignOut = async () => {
     try {
-      // First attempt to sign out
+      // First navigate to the login page
+      navigate('/login', { replace: true });
+
+      // Then attempt to sign out
       await signOut();
 
-      // Then navigate to the login page after successful sign out
-      navigate('/login', { replace: true });
+      // Clear any local storage items that might be causing issues
+      localStorage.removeItem('supabase.auth.token');
+
+      // Force a page reload to ensure clean state
+      window.location.reload();
     } catch (error) {
       console.error('Error signing out:', error);
       // If there's an error, still try to navigate to login

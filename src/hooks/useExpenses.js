@@ -10,7 +10,13 @@ export function useTransactions() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetchTransactions()
+    if (user) {
+      fetchTransactions()
+    } else {
+      setLoading(false)
+      setExpenses([])
+      setIncome([])
+    }
   }, [user])
 
   async function fetchTransactions() {
@@ -18,8 +24,6 @@ export function useTransactions() {
       setLoading(true)
       setError(null)
       
-      if (!user) return
-
       const [expensesData, incomeData] = await Promise.all([
         transactionService.getTransactionsByType(user.id, 'expense'),
         transactionService.getTransactionsByType(user.id, 'income')

@@ -89,10 +89,20 @@ export function AuthProvider({ children }) {
 
   const signOut = async () => {
     try {
+      // Clear local storage first to prevent issues
+      localStorage.removeItem('supabase.auth.token');
+
+      // Then attempt to sign out from Supabase
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+
+      // Clear the session and user state
+      setSession(null);
+      setUser(null);
+
       return { error: null };
     } catch (error) {
+      console.error('Error during sign out:', error);
       return { error };
     }
   };
