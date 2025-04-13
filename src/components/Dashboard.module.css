@@ -72,10 +72,45 @@
     flex-direction: column;
     gap: calc(var(--spacing-unit) * 1);
   }
-  
+
   .expense-amount,
   .expense-category,
   .expense-date {
     margin: 0;
   }
+}
+
+.balanceSection {
+  background-color: white;
+  border-radius: 8px;
+  padding: 24px;
+  margin: 24px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.balanceTitle {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.balanceAmount {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.positiveBalance {
+  color: #4caf50;
+}
+
+.negativeBalance {
+  color: #f44336;
+}
+
+.noDataText {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
 }

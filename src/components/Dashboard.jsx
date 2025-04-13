@@ -6,6 +6,7 @@ import Navbar from './Navbar';
 import TransactionForm from './TransactionForm';
 import EditTransactionCard from './EditTransactionCard';
 import CurrencySelector from './CurrencySelector';
+import styles from './Dashboard.module.css';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -133,6 +134,29 @@ export default function Dashboard() {
             <CurrencySelector />
           </div>
         </header>
+
+        <div className={styles.balanceSection}>
+          <h2 className={styles.balanceTitle}>Current Balance</h2>
+          {income.length === 0 && expenses.length === 0 ? (
+            <p className={styles.noDataText}>Add income and expense data</p>
+          ) : (
+            <p
+              className={`${styles.balanceAmount} ${
+                parseFloat(calculateTotal(income, 'income')) +
+                  parseFloat(calculateTotal(expenses, 'expense')) >=
+                0
+                  ? styles.positiveBalance
+                  : styles.negativeBalance
+              }`}
+            >
+              {currencySymbols[currency]}
+              {Math.abs(
+                parseFloat(calculateTotal(income, 'income')) +
+                  parseFloat(calculateTotal(expenses, 'expense'))
+              ).toFixed(2)}
+            </p>
+          )}
+        </div>
 
         <div className="transaction-type-selector">
           <button
