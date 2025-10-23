@@ -1,5 +1,6 @@
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
   const { signOut } = useAuth();
@@ -31,9 +32,12 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="navbar-content">
         <img src="/logo.png" alt="Finhood Logo" className="navbar-logo" />
-        <button onClick={handleSignOut} className="navbar-signout">
-          Sign Out
-        </button>
+        <div className="navbar-actions">
+          <ThemeToggle />
+          <button onClick={handleSignOut} className="navbar-signout">
+            Sign Out
+          </button>
+        </div>
       </div>
     </nav>
   );

@@ -9,6 +9,23 @@
   width: 100%;
 }
 
+/* Chart color variables */
+.incomeColor {
+  color: #10b981;
+}
+
+.expenseColor {
+  color: #ef4444;
+}
+
+.positiveColor {
+  color: #10b981;
+}
+
+.negativeColor {
+  color: #ef4444;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -29,10 +46,10 @@
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-color);
-  background: #f0f9ff;
+  background: var(--background-color);
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;
-  border: 1px solid #bae6fd;
+  border: 1px solid var(--border-color);
 }
 
 .selectorContainer {

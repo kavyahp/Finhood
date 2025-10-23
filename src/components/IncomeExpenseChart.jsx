@@ -75,8 +75,33 @@ export default function IncomeExpenseChart() {
     return (value / maxValue) * 100;
   };
 
+  const getFilteredData = () => {
+    const filteredIncome = income.filter(transaction => {
+      const transactionDate = new Date(transaction.date);
+      return transactionDate.getMonth() === selectedMonth && 
+             transactionDate.getFullYear() === selectedYear;
+    });
+
+    const filteredExpenses = expenses.filter(transaction => {
+      const transactionDate = new Date(transaction.date);
+      return transactionDate.getMonth() === selectedMonth && 
+             transactionDate.getFullYear() === selectedYear;
+    });
+
+    const incomeTotal = filteredIncome.reduce((sum, transaction) => {
+      return sum + parseFloat(transaction.amount);
+    }, 0);
+
+    const expensesTotal = filteredExpenses.reduce((sum, transaction) => {
+      return sum + parseFloat(transaction.amount);
+    }, 0);
+
+    return { incomeTotal, expensesTotal };
+  };
+
   const getNetAmount = () => {
-    return totalIncome - totalExpenses;
+    const { incomeTotal, expensesTotal } = getFilteredData();
+    return incomeTotal - expensesTotal;
   };
 
   const getMonthName = (monthIndex) => {
@@ -180,33 +205,33 @@ export default function IncomeExpenseChart() {
         )}
       </div>
 
-      {hasData && (
-        <div className={styles.summary}>
-          <div className={styles.summaryItem}>
-            <div className={styles.summaryLabel}>Total Income</div>
-            <div className={styles.summaryValue} style={{ color: '#10b981' }}>
-              {formatAmount(totalIncome)}
+      {hasData && (() => {
+        const { incomeTotal, expensesTotal } = getFilteredData();
+        return (
+          <div className={styles.summary}>
+            <div className={styles.summaryItem}>
+              <div className={styles.summaryLabel}>Total Income</div>
+              <div className={`${styles.summaryValue} ${styles.incomeColor}`}>
+                {formatAmount(incomeTotal)}
+              </div>
+            </div>
+            <div className={styles.summaryItem}>
+              <div className={styles.summaryLabel}>Total Expenses</div>
+              <div className={`${styles.summaryValue} ${styles.expenseColor}`}>
+                {formatAmount(expensesTotal)}
+              </div>
+            </div>
+            <div className={styles.summaryItem}>
+              <div className={styles.summaryLabel}>Net Amount</div>
+              <div 
+                className={`${styles.summaryValue} ${getNetAmount() >= 0 ? styles.positiveColor : styles.negativeColor}`}
+              >
+                {formatAmount(getNetAmount())}
+              </div>
             </div>
           </div>
-          <div className={styles.summaryItem}>
-            <div className={styles.summaryLabel}>Total Expenses</div>
-            <div className={styles.summaryValue} style={{ color: '#ef4444' }}>
-              {formatAmount(totalExpenses)}
-            </div>
-          </div>
-          <div className={styles.summaryItem}>
-            <div className={styles.summaryLabel}>Net Amount</div>
-            <div 
-              className={styles.summaryValue} 
-              style={{ 
-                color: getNetAmount() >= 0 ? '#10b981' : '#ef4444' 
-              }}
-            >
-              {formatAmount(getNetAmount())}
-            </div>
-          </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

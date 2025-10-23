@@ -4,9 +4,10 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { TransactionsProvider } from './contexts/TransactionsContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import LandingPage from './components/LandingPage';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
@@ -34,29 +35,31 @@ function PrivateRoute({ children }) {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <CurrencyProvider>
-          <TransactionsProvider>
-            <AuthCheck>
-              <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/auth/callback" element={<EmailVerification />} />
-                <Route
-                  path="/dashboard/*"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </AuthCheck>
-          </TransactionsProvider>
-        </CurrencyProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <CurrencyProvider>
+            <TransactionsProvider>
+              <AuthCheck>
+                <Routes>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/auth/callback" element={<EmailVerification />} />
+                  <Route
+                    path="/dashboard/*"
+                    element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </AuthCheck>
+            </TransactionsProvider>
+          </CurrencyProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </Router>
   );
 }

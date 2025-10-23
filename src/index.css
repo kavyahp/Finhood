@@ -277,7 +277,7 @@
 
 /* Base styles */
 :root {
-  /* Colors */
+  /* Light theme colors */
   --primary-color: #3cb371;
   --primary-hover: #32cd32;
   --error-color: #dc2626;
@@ -286,6 +286,8 @@
   --background-color: #f9fafb;
   --card-background: #ffffff;
   --border-color: #e5e7eb;
+  --hover-color: #f3f4f6;
+  --danger-color: #dc2626;
 
   /* Layout */
   --navbar-height: 5rem;
@@ -297,12 +299,20 @@
   /* Grid */
   --grid-gap: clamp(1.5rem, 2vw, 2rem);
   --grid-min-width: 18rem;
+}
 
-  /* Icon Button Styles */
-  --primary-color: #2563eb;
-  --danger-color: #dc2626;
-  --text-color: #1f2937;
-  --hover-color: #f3f4f6;
+/* Dark theme */
+[data-theme="dark"] {
+  --primary-color: #4ade80;
+  --primary-hover: #22c55e;
+  --error-color: #ef4444;
+  --text-color: #f9fafb;
+  --text-secondary: #9ca3af;
+  --background-color: #111827;
+  --card-background: #1f2937;
+  --border-color: #374151;
+  --hover-color: #374151;
+  --danger-color: #ef4444;
 }
 
 * {
@@ -541,6 +551,7 @@ label {
   font-weight: 500;
 }
 
+
 .expense-form-section,
 .expenses-section {
   width: 100%;
@@ -751,6 +762,12 @@ label {
   .card {
     padding: 16px;
   }
+
+  .user-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
 }
 
 /* Utility Classes */
@@ -809,6 +826,12 @@ label {
   align-items: center;
   justify-content: space-between;
   gap: var(--grid-gap);
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .navbar-logo {

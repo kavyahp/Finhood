@@ -1,0 +1,75 @@
+.themeToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-color);
+  min-width: 80px;
+  justify-content: center;
+}
+
+.themeToggle:hover {
+  background: var(--hover-color);
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.themeToggle:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(60, 179, 113, 0.2);
+}
+
+.toggleIcon {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.toggleIcon.dark {
+  transform: rotate(180deg);
+}
+
+.toggleIcon.light {
+  transform: rotate(0deg);
+}
+
+.toggleText {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .themeToggle {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    min-width: 70px;
+  }
+
+  .toggleIcon {
+    font-size: 1rem;
+  }
+
+  .toggleText {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .themeToggle {
+    padding: 0.3rem 0.5rem;
+    min-width: 60px;
+  }
+
+  .toggleText {
+    display: none;
+  }
+}
