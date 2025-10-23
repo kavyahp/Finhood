@@ -114,3 +114,34 @@
   font-size: 16px;
   margin: 0;
 }
+
+/* Analytics Section */
+.analyticsSection {
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.analyticsTitle {
+  font-size: 1.5rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.analyticsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--grid-gap);
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .analyticsTitle {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+}

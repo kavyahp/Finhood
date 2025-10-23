@@ -6,6 +6,7 @@ import Navbar from './Navbar';
 import TransactionForm from './TransactionForm';
 import EditTransactionCard from './EditTransactionCard';
 import CurrencySelector from './CurrencySelector';
+import IncomeExpenseChart from './IncomeExpenseChart';
 import styles from './Dashboard.module.css';
 
 export default function Dashboard() {
@@ -344,6 +345,14 @@ export default function Dashboard() {
                 )}
               </div>
             </section>
+          </div>
+
+          {/* Analytics Section */}
+          <div className={styles.analyticsSection}>
+            <h2 className={styles.analyticsTitle}>Analytics & Insights</h2>
+            <div className={styles.analyticsGrid}>
+              <IncomeExpenseChart />
+            </div>
           </div>
         </div>
       </main>
